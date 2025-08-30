@@ -1,8 +1,7 @@
-import 'package:donasiku/user-interface/onboarding/onboardingScreen.dart';
-import 'package:donasiku/user-interface/splashScreen/splashScreen.dart';
+import 'package:donasiku/user_interface/onboarding/onboarding_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:donasiku/state-management/roleController.dart';
+import 'package:donasiku/state_management/role_controller.dart';
 
 void main() {
   Get.put(RoleController());
