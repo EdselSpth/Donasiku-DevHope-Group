@@ -1,6 +1,6 @@
-import 'package:donasiku/user-interface/auth/registerScreen.dart';
+import 'package:donasiku/user_interface/onboarding/policy_page.dart';
 import 'package:flutter/material.dart';
-import 'package:donasiku/user-interface/onboarding/onboardingPage.dart';
+import 'package:donasiku/user_interface/onboarding/onboarding_page.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -58,7 +58,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const RegisterScreen()),
+              MaterialPageRoute(
+                builder: (context) => const PrivacyPolicyScreen(),
+              ),
             );
           },
         ),

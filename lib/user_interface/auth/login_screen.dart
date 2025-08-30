@@ -1,7 +1,9 @@
-import 'package:donasiku/user-interface/auth/registerScreen.dart';
+import 'package:donasiku/user_interface/auth/register_screen.dart';
+import 'package:donasiku/user_interface/navigation/homepage.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatelessWidget {
+  const LoginScreen({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,7 +91,12 @@ class LoginScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => HomePage()),
+                    );
+                  },
                   child: const Text(
                     "MASUK",
                     style: TextStyle(

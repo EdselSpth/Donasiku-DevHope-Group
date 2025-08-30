@@ -1,4 +1,4 @@
-import 'package:donasiku/user-interface/auth/loginScreen.dart';
+import 'package:donasiku/user_interface/auth/login_screen.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -12,6 +12,8 @@ class _SplashScreenState extends State<SplashScreen> {
   Future _startSplashScreen() async {
     var duration = const Duration(seconds: 3);
     await Future.delayed(duration);
+
+    if (!mounted) return;
 
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(

@@ -1,0 +1,86 @@
+// lib/user_interface/home/main_screen.dart
+
+import 'package:donasiku/state_management/main_screen_controller.dart';
+import 'package:donasiku/navigation/home_page.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+// --- Halaman-halaman Placeholder ---
+// Anda bisa mengganti ini dengan widget halaman Anda yang sebenarnya nanti.
+class PlaceholderWidget extends StatelessWidget {
+  final String title;
+  const PlaceholderWidget(this.title, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title),
+        backgroundColor: const Color(0xFF0D2C63),
+        foregroundColor: Colors.white,
+      ),
+      body: Center(
+        child: Text(title, style: const TextStyle(fontSize: 24)),
+      ),
+    );
+  }
+}
+// ------------------------------------
+
+class MainScreen extends GetView<MainScreenController> {
+  const MainScreen({super.key});
+
+  // Pindahkan daftar halaman ke sini agar tetap rapi
+  final List<Widget> _pages = [
+    HomePage(), // <-- Ganti di sini
+    const PlaceholderWidget('Donasi'),  
+    const PlaceholderWidget('Riwayat'), 
+    const PlaceholderWidget('Profile'),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    // Daftarkan controller ke GetX
+    final MainScreenController controller = Get.put(MainScreenController());
+
+    return Scaffold(
+      // Obx akan secara otomatis "mendengarkan" perubahan pada controller.selectedIndex
+      // dan membangun ulang widget di dalamnya saat nilainya berubah.
+      body: Obx(() => Center(
+            child: _pages[controller.selectedIndex.value],
+          )),
+      bottomNavigationBar: Obx(
+        () => BottomNavigationBar(
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home_outlined),
+              activeIcon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.favorite_border),
+              activeIcon: Icon(Icons.favorite),
+              label: 'Donasi',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.history_outlined),
+              activeIcon: Icon(Icons.history),
+              label: 'Riwayat',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline),
+              activeIcon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+          ],
+          currentIndex: controller.selectedIndex.value, // Ambil nilai dari controller
+          selectedItemColor: const Color(0xFF0D2C63),
+          unselectedItemColor: Colors.grey,
+          onTap: controller.changeTabIndex, // Panggil method dari controller saat di-tap
+          showUnselectedLabels: true,
+          type: BottomNavigationBarType.fixed,
+        ),
+      ),
+    );
+  }
+}
