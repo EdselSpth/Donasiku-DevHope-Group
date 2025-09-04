@@ -3,9 +3,6 @@ import 'package:donasiku/models/donation_item.dart';
 import 'package:donasiku/widget/donation_card.dart';
 
 class HomePage extends StatelessWidget {
-  HomePage({super.key});
-
-  // Data tiruan untuk ditampilkan di grid
   final List<DonationItem> dummyItems = [
     DonationItem(
       title: 'Baju Pria Dewasa',
@@ -33,18 +30,18 @@ class HomePage extends StatelessWidget {
     ),
   ];
 
+  HomePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       body: SingleChildScrollView(
-        // Agar halaman bisa di-scroll
         child: Column(children: [_buildHeader(), _buildBody()]),
       ),
     );
   }
 
-  // Widget untuk Header Biru
   Widget _buildHeader() {
     return Stack(
       clipBehavior: Clip.none,
@@ -84,7 +81,6 @@ class HomePage extends StatelessWidget {
                 ),
                 CircleAvatar(
                   radius: 24,
-                  // Ganti dengan gambar profil pengguna nanti
                   backgroundImage: NetworkImage(
                     'https://i.pravatar.cc/150?img=1',
                   ),
@@ -93,7 +89,6 @@ class HomePage extends StatelessWidget {
             ),
           ),
         ),
-        // Kartu "Donasi Sekarang" yang menjorok ke atas
         Positioned(
           top: 140,
           left: 24,
@@ -141,17 +136,15 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  // Widget untuk sisa konten di bawah Header
   Widget _buildBody() {
     return Padding(
       padding: const EdgeInsets.only(
         top: 80,
         left: 24,
         right: 24,
-      ), // top padding untuk memberi ruang bagi card
+      ),
       child: Column(
         children: [
-          // Tombol Salurkan Donasi
           OutlinedButton(
             onPressed: () {},
             style: OutlinedButton.styleFrom(
@@ -175,8 +168,6 @@ class HomePage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-
-          // Judul Grid
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -188,12 +179,9 @@ class HomePage extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-
-          // Grid Donasi Card
           GridView.builder(
-            shrinkWrap: true, // Wajib ada di dalam SingleChildScrollView
-            physics:
-                const NeverScrollableScrollPhysics(), // Agar Grid tidak bisa di-scroll sendiri
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
               crossAxisSpacing: 16,
@@ -205,9 +193,7 @@ class HomePage extends StatelessWidget {
               final item = dummyItems[index];
               return DonationCard(
                 item: item,
-                onTap: () {
-                  // print("Card ${item.title} diklik!");
-                },
+                onTap: () {},
               );
             },
           ),
