@@ -1,10 +1,10 @@
 import 'package:donasiku/state_management/main_screen_controller.dart';
 import 'package:donasiku/user_interface/navigation/homepage.dart';
+import 'package:donasiku/user_interface/navigation/profile/profile_page.dart';
 import 'package:donasiku/widget/navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-// Placeholder for other screens
 class PlaceholderWidget extends StatelessWidget {
   final String title;
   const PlaceholderWidget(this.title, {super.key});
@@ -19,15 +19,13 @@ class PlaceholderWidget extends StatelessWidget {
 }
 
 class MainScreen extends StatelessWidget {
-  // Note: I also removed 'const' from the constructor
   MainScreen({super.key});
 
-  // ✅ Solution: Remove 'const' from the list initialization.
   final List<Widget> _pages = [
-    HomePage(), // Your actual homepage
-    const PlaceholderWidget('Donasi'), // Replace with your Donasi screen
-    const PlaceholderWidget('Riwayat'), // Replace with your Riwayat screen
-    const PlaceholderWidget('Profile'), // Replace with your Profile screen
+    HomePage(),
+    const PlaceholderWidget('Donasi'),
+    const PlaceholderWidget('Riwayat'),
+    ProfilePage(),
   ];
 
   @override
@@ -36,9 +34,7 @@ class MainScreen extends StatelessWidget {
     final MainScreenController controller = Get.put(MainScreenController());
 
     return Scaffold(
-      // The body will change based on the selected index from the controller
       body: Obx(() => _pages[controller.selectedIndex.value]),
-      // Add our reusable navigation bar widget here
       bottomNavigationBar: const AppNavigationBar(),
     );
   }

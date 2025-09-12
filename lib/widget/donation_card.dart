@@ -10,6 +10,7 @@ class DonationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: Colors.white,
       // Card sebagai container utama dengan bayangan dan sudut tumpul
       clipBehavior:
           Clip.antiAlias, // Memastikan konten di dalamnya mengikuti bentuk card
