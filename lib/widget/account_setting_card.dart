@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:donasiku/user_interface/Verification/verification_guide_screen.dart';
 
 class AccountSettingsCard extends StatelessWidget {
   const AccountSettingsCard({super.key});
@@ -30,8 +31,12 @@ class AccountSettingsCard extends StatelessWidget {
               subtitle: const Text('Akun sudah terverifikasi'),
               trailing: const Icon(Icons.arrow_forward_ios, size: 16),
               onTap: () {
-                // Tambahkan logika navigasi atau aksi di sini
-                print('Account Verification Tapped!');
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const VerificationGuideScreen(),
+                  ),
+                );
               },
             ),
           ],
