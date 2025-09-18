@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:donasiku/user_interface/Verification/face_verification_screen.dart';
+
+import 'package:donasiku/user_interface/Verification/ktp_camera_screen.dart';
 
 class UploadKtpScreen extends StatelessWidget {
   const UploadKtpScreen({Key? key}) : super(key: key);
@@ -106,7 +107,7 @@ class UploadKtpScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const FaceVerificationScreen(),
+                      builder: (context) => const KtpCameraScreen(),
                     ),
                   );
                 },
