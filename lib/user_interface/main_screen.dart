@@ -1,4 +1,5 @@
 import 'package:donasiku/state_management/main_screen_controller.dart';
+import 'package:donasiku/user_interface/donation/donation_page.dart';
 import 'package:donasiku/user_interface/navigation/homepage.dart';
 import 'package:donasiku/user_interface/navigation/profile/profile_page.dart';
 import 'package:donasiku/widget/navigation_bar.dart';
@@ -24,7 +25,7 @@ class MainScreen extends StatelessWidget {
 
   final List<Widget> _pages = [
     HomePage(),
-    const PlaceholderWidget('Donasi'),
+    DonationPage(),
     HistoryPage(),
     ProfilePage(),
   ];

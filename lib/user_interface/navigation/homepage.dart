@@ -138,11 +138,7 @@ class HomePage extends StatelessWidget {
 
   Widget _buildBody() {
     return Padding(
-      padding: const EdgeInsets.only(
-        top: 80,
-        left: 24,
-        right: 24,
-      ),
+      padding: const EdgeInsets.only(top: 80, left: 24, right: 24),
       child: Column(
         children: [
           OutlinedButton(
@@ -191,10 +187,7 @@ class HomePage extends StatelessWidget {
             itemCount: dummyItems.length,
             itemBuilder: (context, index) {
               final item = dummyItems[index];
-              return DonationCard(
-                item: item,
-                onTap: () {},
-              );
+              return DonationCard(item: item, onTap: () {});
             },
           ),
         ],
