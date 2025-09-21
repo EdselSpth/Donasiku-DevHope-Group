@@ -1,5 +1,6 @@
 // lib/user_interface/donation/item_request_page.dart
 
+import 'package:donasiku/user_interface/navigation/donation/item_request_list_page.dart';
 import 'package:flutter/material.dart';
 
 class ItemRequestPage extends StatefulWidget {
@@ -43,9 +44,10 @@ class _ItemRequestPageState extends State<ItemRequestPage> {
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Column(
                 children: [
+                  const SizedBox(height: 30),
                   // AppBar Kustom
                   _buildCustomAppBar(context),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 15),
                   // Kartu Informasi
                   _buildInfoCard(),
                   const SizedBox(height: 20),
@@ -167,7 +169,12 @@ class _ItemRequestPageState extends State<ItemRequestPage> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  // TODO: Logika untuk Ajukan Permintaan
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ItemRequestListPage(),
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF0D2C63),

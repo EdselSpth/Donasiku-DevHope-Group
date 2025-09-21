@@ -2,8 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:donasiku/widget/donation_option_card.dart';
-import 'package:donasiku/user_interface/donation/add_donation_page.dart';
-import 'package:donasiku/user_interface/donation/item_request_page.dart'; // <-- 1. IMPORT HALAMAN BARU
+import 'package:donasiku/user_interface/navigation/donation/add_donation_page.dart';
+import 'package:donasiku/user_interface/navigation/donation/item_request_page.dart'; // <-- 1. IMPORT HALAMAN BARU
 
 class DonationPage extends StatelessWidget {
   const DonationPage({super.key});

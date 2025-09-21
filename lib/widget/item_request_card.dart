@@ -1,10 +1,11 @@
 // lib/widget/item_request_card.dart
 
 import 'package:donasiku/models/item_request_model.dart';
+import 'package:donasiku/user_interface/donation/item_request_detail_page.dart';
 import 'package:flutter/material.dart';
 
 class ItemRequestCard extends StatelessWidget {
-  final ItemRequestModel request;
+  final ItemRequestModelDetail request;
 
   const ItemRequestCard({super.key, required this.request});
 
@@ -70,7 +71,15 @@ class ItemRequestCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            ItemRequestDetailPage(request: request),
+                      ),
+                    );
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF0D2C63),
                     foregroundColor: Colors.white,

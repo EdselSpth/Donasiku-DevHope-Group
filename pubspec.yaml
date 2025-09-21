@@ -10,10 +10,11 @@ dependencies:
   flutter:
     sdk: flutter
   get: ^4.6.6
-  camera: ^0.10.5+9 # Cek versi terbaru di pub.dev
+  camera: ^0.10.5+9 
   path_provider: ^2.0.11
   path: ^1.8.2
-  dotted_border: ^2.1.0
+  http: ^1.2.1 
+  dotted_border: ^2.1.0   
 
 dev_dependencies:
   flutter_test:
