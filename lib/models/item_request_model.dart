@@ -13,3 +13,17 @@ class ItemRequestModel {
     required this.location,
   });
 }
+
+class ItemRequestModelDetail extends ItemRequestModel {
+  final String quantity;
+  final String description;
+
+  ItemRequestModelDetail({
+    required super.requesterLogoUrl,
+    required super.itemName,
+    required super.recipient,
+    required super.location,
+    required this.quantity,
+    required this.description,
+  });
+}

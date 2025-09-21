@@ -1,4 +1,6 @@
-import 'package:donasiku/models/donation_item.dart'; // Import model yang tadi dibuat
+// lib/widget/donation_card.dart
+
+import 'package:donasiku/models/donation_item.dart';
 import 'package:flutter/material.dart';
 
 class DonationCard extends StatelessWidget {
@@ -11,38 +13,43 @@ class DonationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       color: Colors.white,
-      // Card sebagai container utama dengan bayangan dan sudut tumpul
-      clipBehavior:
-          Clip.antiAlias, // Memastikan konten di dalamnya mengikuti bentuk card
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-      elevation: 4,
+      clipBehavior: Clip.antiAlias,
+      // --- PERUBAHAN DI SINI ---
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16.0), // Sudut lebih bulat
+      ),
+      elevation: 4, // Sedikit naikkan elevation untuk bayangan
+      shadowColor: Colors.black.withOpacity(0.1), // Bayangan lebih halus
       child: InkWell(
-        // InkWell agar card bisa diklik dan ada efek ripple
         onTap: onTap,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Bagian Gambar
             Expanded(
               child: Image.network(
                 item.imageUrl,
                 width: double.infinity,
-                fit: BoxFit.cover, // Agar gambar memenuhi area tanpa distorsi
-                // Placeholder saat gambar sedang dimuat
+                fit: BoxFit.cover,
                 loadingBuilder: (context, child, loadingProgress) {
                   if (loadingProgress == null) return child;
-                  return const Center(child: CircularProgressIndicator());
+                  return Center(
+                    child: Container(
+                      // Placeholder dengan warna
+                      color: Colors.grey[200],
+                      child: const Icon(Icons.image, color: Colors.grey),
+                    ),
+                  );
                 },
-                // Tampilan jika gagal memuat gambar
                 errorBuilder: (context, error, stackTrace) {
-                  return const Center(
-                    child: Icon(Icons.broken_image, color: Colors.grey),
+                  return Center(
+                    child: Container(
+                      color: Colors.grey[200],
+                      child: const Icon(Icons.broken_image, color: Colors.grey),
+                    ),
                   );
                 },
               ),
             ),
-
-            // Bagian Teks di bawah gambar
             Padding(
               padding: const EdgeInsets.all(12.0),
               child: Column(
@@ -51,24 +58,24 @@ class DonationCard extends StatelessWidget {
                   Text(
                     item.title,
                     style: const TextStyle(
-                      fontSize: 16,
+                      fontSize: 15,
                       fontWeight: FontWeight.bold,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 4),
                   Row(
                     children: [
                       Icon(
                         Icons.location_on_outlined,
-                        color: Colors.grey[600],
-                        size: 16,
+                        color: Colors.blueAccent,
+                        size: 14,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         item.location,
-                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                        style: TextStyle(fontSize: 13, color: Colors.grey[600]),
                       ),
                     ],
                   ),

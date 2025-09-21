@@ -122,7 +122,7 @@ class RegisterScreen extends StatelessWidget {
                   ),
                   onPressed: () {},
                   child: const Text(
-                    "MASUK",
+                    "DAFTAR",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
