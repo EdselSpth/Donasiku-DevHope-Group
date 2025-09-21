@@ -1,8 +1,7 @@
-// lib/user_interface/donation/item_request_page.dart
-
 import 'package:donasiku/user_interface/navigation/donation/item_request_list_page.dart';
 import 'package:flutter/material.dart';
 
+// ... (StatefulWidget, controller, dan dispose tetap sama) ...
 class ItemRequestPage extends StatefulWidget {
   const ItemRequestPage({super.key});
 
@@ -11,7 +10,6 @@ class ItemRequestPage extends StatefulWidget {
 }
 
 class _ItemRequestPageState extends State<ItemRequestPage> {
-  // Controller untuk setiap text field
   final _itemNameController = TextEditingController();
   final _quantityController = TextEditingController();
   final _originController = TextEditingController();
@@ -19,7 +17,6 @@ class _ItemRequestPageState extends State<ItemRequestPage> {
 
   @override
   void dispose() {
-    // Selalu dispose controller
     _itemNameController.dispose();
     _quantityController.dispose();
     _originController.dispose();
@@ -33,26 +30,24 @@ class _ItemRequestPageState extends State<ItemRequestPage> {
       backgroundColor: Colors.grey[100],
       body: Stack(
         children: [
-          // Header Biru Melengkung
+          // ... (Header dan AppBar Kustom tetap sama) ...
           ClipPath(
             clipper: HeaderClipper(),
             child: Container(height: 150, color: const Color(0xFF0D2C63)),
           ),
-          // Konten Utama
           SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Column(
                 children: [
-                  const SizedBox(height: 30),
-                  // AppBar Kustom
                   _buildCustomAppBar(context),
-                  const SizedBox(height: 15),
-                  // Kartu Informasi
+                  const SizedBox(height: 20),
                   _buildInfoCard(),
                   const SizedBox(height: 20),
-                  // Kartu Form
-                  _buildFormCard(),
+
+                  // --- PERUBAHAN DI SINI ---
+                  // Kartu Form sekarang memiliki tombol yang bernavigasi
+                  _buildFormCard(context),
                   const SizedBox(height: 20),
                 ],
               ),
@@ -63,7 +58,7 @@ class _ItemRequestPageState extends State<ItemRequestPage> {
     );
   }
 
-  // Widget untuk AppBar kustom di dalam SafeArea
+  // ... (Widget _buildCustomAppBar dan _buildInfoCard tetap sama) ...
   Widget _buildCustomAppBar(BuildContext context) {
     return Row(
       children: [
@@ -87,7 +82,6 @@ class _ItemRequestPageState extends State<ItemRequestPage> {
     );
   }
 
-  // Widget untuk kartu informasi di bagian atas
   Widget _buildInfoCard() {
     return Card(
       elevation: 2,
@@ -130,7 +124,8 @@ class _ItemRequestPageState extends State<ItemRequestPage> {
   }
 
   // Widget untuk kartu form input
-  Widget _buildFormCard() {
+  Widget _buildFormCard(BuildContext context) {
+    // Tambahkan context
     return Card(
       elevation: 2,
       color: Colors.white,
@@ -169,10 +164,10 @@ class _ItemRequestPageState extends State<ItemRequestPage> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const ItemRequestListPage(),
+                      builder: (context) => ItemRequestListPage(),
                     ),
                   );
                 },
@@ -196,7 +191,7 @@ class _ItemRequestPageState extends State<ItemRequestPage> {
     );
   }
 
-  // Helper untuk membuat Text Field dengan label di atasnya
+  // ... (Widget _buildTextFieldWithLabel dan HeaderClipper tetap sama)
   Widget _buildTextFieldWithLabel({
     required String label,
     required String hint,
@@ -236,8 +231,8 @@ class _ItemRequestPageState extends State<ItemRequestPage> {
   }
 }
 
-// Clipper untuk header melengkung (bisa pakai yang sudah ada)
 class HeaderClipper extends CustomClipper<Path> {
+  // ...
   @override
   Path getClip(Size size) {
     var path = Path();
@@ -254,7 +249,5 @@ class HeaderClipper extends CustomClipper<Path> {
   }
 
   @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) {
-    return false;
-  }
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
