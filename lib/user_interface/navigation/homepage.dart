@@ -1,7 +1,6 @@
-// lib/user_interface/navigation/homepage.dart
-
-import 'package:donasiku/user_interface/navigation/donation/donation_list_page.dart';
 import 'package:flutter/material.dart';
+import 'package:donasiku/user_interface/navigation/donation/donation_list_page.dart';
+import 'package:donasiku/user_interface/recipients/recipient_list_page.dart';
 import 'package:donasiku/models/donation_item.dart';
 import 'package:donasiku/widget/donation_card.dart';
 
@@ -101,6 +100,7 @@ class HomePage extends StatelessWidget {
           left: 24,
           right: 24,
           child: Card(
+            color: Colors.white,
             elevation: 8,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
@@ -157,7 +157,12 @@ class HomePage extends StatelessWidget {
         child: Column(
           children: [
             OutlinedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => RecipientListPage()),
+                );
+              },
               style: OutlinedButton.styleFrom(
                 backgroundColor: Colors.white,
                 elevation: 2,
