@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:donasiku/user_interface/navigation/donation/donation_list_page.dart';
 import 'package:donasiku/user_interface/recipients/recipient_list_page.dart';
+import 'package:donasiku/user_interface/navigation/donation/donation_page.dart';
 import 'package:donasiku/models/donation_item.dart';
 import 'package:donasiku/widget/donation_card.dart';
 
@@ -124,7 +125,12 @@ class HomePage extends StatelessWidget {
                     ],
                   ),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => DonationPage()),
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF0D2C63),
                       foregroundColor: Colors.white,

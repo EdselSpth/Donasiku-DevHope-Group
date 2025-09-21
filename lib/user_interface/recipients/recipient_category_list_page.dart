@@ -73,8 +73,10 @@ class RecipientCategoryListPage extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              RecipientDetailPage(recipient: recipients[index]),
+                          builder:
+                              (context) => RecipientDetailPage(
+                                recipient: recipients[index],
+                              ),
                         ),
                       );
                     },

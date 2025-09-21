@@ -2,14 +2,14 @@
 import 'package:flutter/material.dart';
 
 class CategoryCard extends StatelessWidget {
-  final IconData icon;
+  final String iconPath;
   final String title;
   final String subtitle;
   final VoidCallback onTap;
 
   const CategoryCard({
     super.key,
-    required this.icon,
+    required this.iconPath,
     required this.title,
     required this.subtitle,
     required this.onTap,
@@ -25,7 +25,7 @@ class CategoryCard extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Row(
           children: [
-            Icon(icon, size: 32, color: const Color(0xFF0D2C63)),
+            Image.asset(iconPath, width: 40, height: 40), // Adjusted size for better visuals
             const SizedBox(width: 16),
             Expanded(
               child: Column(
