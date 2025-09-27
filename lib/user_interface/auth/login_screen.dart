@@ -1,9 +1,15 @@
+import 'package:donasiku/services/auth/auth_api_services.dart';
 import 'package:donasiku/user_interface/auth/register_screen.dart';
 import 'package:donasiku/user_interface/main_screen.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+  LoginScreen({super.key});
+
+  final AuthService authService = AuthService();
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,6 +42,7 @@ class LoginScreen extends StatelessWidget {
               const Text('Username'),
               const SizedBox(height: 8),
               TextField(
+                controller: usernameController,
                 decoration: InputDecoration(
                   hintText: "Masukan username",
                   border: OutlineInputBorder(
@@ -47,6 +54,8 @@ class LoginScreen extends StatelessWidget {
               const Text('Password'),
               const SizedBox(height: 5),
               TextField(
+                controller: passwordController,
+                obscureText: true,
                 decoration: InputDecoration(
                   hintText: "Masukan password",
                   border: OutlineInputBorder(
@@ -69,7 +78,7 @@ class LoginScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const RegisterScreen(),
+                          builder: (context) => RegisterScreen(),
                         ),
                       );
                     },
@@ -91,11 +100,24 @@ class LoginScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => MainScreen()),
-                    );
+                  onPressed: () async {
+                    try {
+                      final result = await authService.login(
+                        usernameController.text,
+                        passwordController.text,
+                      );
+                      // You can save the token here for future authenticated requests
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => MainScreen()),
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(e.toString()),
+                        ),
+                      );
+                    }
                   },
                   child: const Text(
                     "MASUK",

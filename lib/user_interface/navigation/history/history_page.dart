@@ -106,7 +106,6 @@ class _HistoryPageState extends State<HistoryPage>
                   bottom: Radius.circular(30),
                 ),
               ),
-              // --- FIX #1: HILANGKAN BAYANGAN APPBAR ---
               elevation: 0,
               toolbarHeight: 120,
               flexibleSpace: SafeArea(
