@@ -1,10 +1,16 @@
+import 'package:donasiku/services/auth/auth_api_services.dart';
 import 'package:donasiku/user_interface/auth/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:donasiku/state_management/role_controller.dart';
 
 class RegisterScreen extends StatelessWidget {
-  const RegisterScreen({super.key});
+  RegisterScreen({super.key});
+
+  final AuthService authService = AuthService();
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -40,9 +46,22 @@ class RegisterScreen extends StatelessWidget {
               const SizedBox(height: 24),
               const Text('Username'),
               const SizedBox(height: 8),
-              const TextField(
-                decoration: InputDecoration(
+              TextField(
+                controller: usernameController,
+                decoration: const InputDecoration(
                   hintText: "Masukan username",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text('Email'),
+              const SizedBox(height: 8),
+              TextField(
+                controller: emailController,
+                decoration: const InputDecoration(
+                  hintText: "Masukan email",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
@@ -51,9 +70,10 @@ class RegisterScreen extends StatelessWidget {
               const SizedBox(height: 16),
               const Text('Password'),
               const SizedBox(height: 5),
-              const TextField(
+              TextField(
+                controller: passwordController,
                 obscureText: true,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: "Masukan password",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -93,7 +113,7 @@ class RegisterScreen extends StatelessWidget {
                   TextButton(
                     style: TextButton.styleFrom(
                       padding: EdgeInsets.zero,
-                      minimumSize: Size(0, 0),
+                      minimumSize: const Size(0, 0),
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                     onPressed: () {
@@ -115,12 +135,36 @@ class RegisterScreen extends StatelessWidget {
                 height: 48,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF0D2C63), // biru navy
+                    backgroundColor: const Color(0xFF0D2C63), // biru navy
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: () async {
+                    try {
+                      String role =
+                          rc.selectedRole.value == 'Donatur'
+                              ? 'donor'
+                              : 'receiver';
+                      final result = await authService.register(
+                        usernameController.text,
+                        emailController.text,
+                        passwordController.text,
+                        role,
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(result['message'])),
+                      );
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginScreen()),
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text(e.toString())));
+                    }
+                  },
                   child: const Text(
                     "DAFTAR",
                     style: TextStyle(

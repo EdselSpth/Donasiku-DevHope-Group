@@ -1,15 +1,21 @@
+// lib/services/location_api_service.dart
+import 'package:donasiku/models/login_token.dart';
 import 'package:http/http.dart' as http;
 import 'package:donasiku/models/location_model.dart';
 
-class LocationApiService {
-  final String _baseUrl = 'https://wilayah.id/api';
+class LoginServices {
+  final String _baseUrl = 'http://localhost:3000';
 
-  Future<List<Location>> getProvinces() async {
-    final response = await http.get(Uri.parse('$_baseUrl/provinces.json'));
+  Future<LoginToken> login() async {
+    final response = await http.get(Uri.parse('$_baseUrl/auth/login'));
     if (response.statusCode == 200) {
-      return parseLocations(response.body);
+      final data = response.body;
+      return LoginToken(
+        accessToken: 'dummy_access_token',
+        refreshToken: 'dummy_refresh_token',
+      );
     } else {
-      throw Exception('Gagal memuat provinsi');
+      throw Exception('Gagal Login');
     }
   }
 

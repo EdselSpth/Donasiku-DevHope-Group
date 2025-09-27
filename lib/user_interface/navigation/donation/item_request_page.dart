@@ -30,7 +30,6 @@ class _ItemRequestPageState extends State<ItemRequestPage> {
       backgroundColor: Colors.grey[100],
       body: Stack(
         children: [
-          // ... (Header dan AppBar Kustom tetap sama) ...
           ClipPath(
             clipper: HeaderClipper(),
             child: Container(height: 150, color: const Color(0xFF0D2C63)),
@@ -58,7 +57,6 @@ class _ItemRequestPageState extends State<ItemRequestPage> {
     );
   }
 
-  // ... (Widget _buildCustomAppBar dan _buildInfoCard tetap sama) ...
   Widget _buildCustomAppBar(BuildContext context) {
     return Row(
       children: [
@@ -77,7 +75,7 @@ class _ItemRequestPageState extends State<ItemRequestPage> {
             ),
           ),
         ),
-        const SizedBox(width: 48), // Spacer agar judul tetap di tengah
+        const SizedBox(width: 48), 
       ],
     );
   }
@@ -123,9 +121,7 @@ class _ItemRequestPageState extends State<ItemRequestPage> {
     );
   }
 
-  // Widget untuk kartu form input
   Widget _buildFormCard(BuildContext context) {
-    // Tambahkan context
     return Card(
       elevation: 2,
       color: Colors.white,
@@ -191,7 +187,6 @@ class _ItemRequestPageState extends State<ItemRequestPage> {
     );
   }
 
-  // ... (Widget _buildTextFieldWithLabel dan HeaderClipper tetap sama)
   Widget _buildTextFieldWithLabel({
     required String label,
     required String hint,
@@ -232,7 +227,6 @@ class _ItemRequestPageState extends State<ItemRequestPage> {
 }
 
 class HeaderClipper extends CustomClipper<Path> {
-  // ...
   @override
   Path getClip(Size size) {
     var path = Path();

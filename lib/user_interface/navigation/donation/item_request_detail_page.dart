@@ -1,6 +1,6 @@
 // lib/user_interface/donation/item_request_detail_page.dart
 
-import 'package:donasiku/models/item_request_model.dart'; // Nama file tetap, isinya sudah diubah
+import 'package:donasiku/models/item_request_model.dart'; 
 import 'package:flutter/material.dart';
 
 class ItemRequestDetailPage extends StatelessWidget {
@@ -11,7 +11,6 @@ class ItemRequestDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ... (Seluruh isi kode build() tidak ada yang berubah, karena hanya nama tipenya saja yang diganti)
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(

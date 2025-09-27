@@ -28,7 +28,7 @@ class ProfilePage extends StatelessWidget {
                 // Aksi logout
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  MaterialPageRoute(builder: (context) => LoginScreen()),
                 );
               },
             ),

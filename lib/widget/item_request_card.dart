@@ -1,11 +1,11 @@
 // lib/widget/item_request_card.dart
 
 import 'package:donasiku/models/item_request_model.dart';
-import 'package:donasiku/user_interface/donation/item_request_detail_page.dart';
+import 'package:donasiku/user_interface/navigation/donation/item_request_detail_page.dart';
 import 'package:flutter/material.dart';
 
 class ItemRequestCard extends StatelessWidget {
-  final ItemRequestModel request;
+  final ItemRequestModelDetail request;
 
   const ItemRequestCard({super.key, required this.request});
 
