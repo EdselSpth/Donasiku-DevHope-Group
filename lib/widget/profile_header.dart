@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:donasiku/user_interface/navigation/profile/detail_akun_screen.dart';
 
 class ProfileHeader extends StatelessWidget {
-  const ProfileHeader({super.key});
+  final Map<String, dynamic> user;
+  const ProfileHeader({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -18,10 +19,10 @@ class ProfileHeader extends StatelessWidget {
           children: [
             Row(
               children: [
-                const CircleAvatar(
+                CircleAvatar(
                   radius: 30,
                   backgroundImage: NetworkImage(
-                    'https://i.pravatar.cc/150?img=12',
+                    user['profile_url'] ?? 'https://i.pravatar.cc/150?img=12',
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -38,18 +39,18 @@ class ProfileHeader extends StatelessWidget {
                           color: Colors.blue.shade50,
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Text(
-                          'Donatur',
-                          style: TextStyle(
+                        child: Text(
+                          user['role'] ?? 'Donatur',
+                          style: const TextStyle(
                             color: Colors.blue,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
                       const SizedBox(height: 4),
-                      const Text(
-                        'Zunadea Kusmiandita',
-                        style: TextStyle(
+                      Text(
+                        user['username'] ?? 'User',
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
