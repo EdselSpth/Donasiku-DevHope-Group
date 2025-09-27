@@ -1,9 +1,11 @@
 
 import 'dart:convert';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 class AuthService {
   final String baseUrl = "http://10.0.2.2:3000"; // Use 10.0.2.2 for Android emulator
+  final storage = new FlutterSecureStorage();
 
   Future<Map<String, dynamic>> register(String username, String email, String password, String role) async {
     final response = await http.post(
@@ -38,9 +40,15 @@ class AuthService {
     );
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      final data = jsonDecode(response.body);
+      await storage.write(key: 'accessToken', value: data['accessToken']);
+      return data;
     } else {
       throw Exception('Failed to login: ${response.body}');
     }
+  }
+
+  Future<void> logout() async {
+    await storage.delete(key: 'accessToken');
   }
 }

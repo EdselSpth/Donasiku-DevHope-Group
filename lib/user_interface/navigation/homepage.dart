@@ -1,3 +1,4 @@
+import 'package:donasiku/services/user/user_api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:donasiku/user_interface/navigation/donation/donation_list_page.dart';
 import 'package:donasiku/user_interface/recipients/recipient_list_page.dart';
@@ -5,7 +6,14 @@ import 'package:donasiku/user_interface/navigation/donation/donation_page.dart';
 import 'package:donasiku/models/donation_item.dart';
 import 'package:donasiku/widget/donation_card.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  HomePage({super.key});
+
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   final List<DonationItem> dummyItems = [
     DonationItem(
       title: 'Baju Pria Dewasa',
@@ -26,7 +34,34 @@ class HomePage extends StatelessWidget {
     DonationItem(title: 'Celana Pria', location: 'Bojongsoang', imageUrl: ''),
   ];
 
-  HomePage({super.key});
+  final UserService userService = UserService();
+  Map<String, dynamic>? _user;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _getUserProfile();
+  }
+
+  Future<void> _getUserProfile() async {
+    try {
+      final user = await userService.getProfile();
+      setState(() {
+        _user = user['user'];
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,29 +102,31 @@ class HomePage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Column(
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        "Halo Zunadea!",
-                        style: TextStyle(
+                        _isLoading ? "Loading..." : "Halo ${_user?['username'] ?? 'User'}!",
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Text(
+                      const Text(
                         "Donasi Apa Hari Ini ?",
                         style: TextStyle(color: Colors.white70, fontSize: 16),
                       ),
                     ],
                   ),
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 24,
-                    backgroundImage: NetworkImage(
-                      'https://i.pravatar.cc/150?img=1',
-                    ),
+                    backgroundImage: _user?['profile_url'] != null
+                        ? NetworkImage(_user!['profile_url'])
+                        : const NetworkImage(
+                            'https://i.pravatar.cc/150?img=1',
+                          ),
                   ),
                 ],
               ),
