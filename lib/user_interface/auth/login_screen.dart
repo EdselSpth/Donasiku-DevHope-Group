@@ -95,7 +95,7 @@ class LoginScreen extends StatelessWidget {
                 height: 48,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0D2C63), // biru navy
+                    backgroundColor: const Color(0xFF0D2C63),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -106,17 +106,14 @@ class LoginScreen extends StatelessWidget {
                         usernameController.text,
                         passwordController.text,
                       );
-                      // You can save the token here for future authenticated requests
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(builder: (context) => MainScreen()),
                       );
                     } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(e.toString()),
-                        ),
-                      );
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text(e.toString())));
                     }
                   },
                   child: const Text(
