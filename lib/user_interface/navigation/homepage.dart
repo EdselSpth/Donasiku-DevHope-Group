@@ -1,3 +1,6 @@
+
+import 'package:donasiku/user_interface/navigation/donation/donation_detail_page.dart';
+import 'package:donasiku/services/donation_service.dart';
 import 'package:donasiku/services/user/user_api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:donasiku/user_interface/navigation/donation/donation_list_page.dart';
@@ -14,34 +17,17 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final List<DonationItem> dummyItems = [
-    DonationItem(
-      title: 'Baju Pria Dewasa',
-      location: 'Bojongsoang',
-      imageUrl: '',
-    ),
-    DonationItem(
-      title: 'Sepatu',
-      location: 'Bojongsoang',
-      imageUrl:
-          'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500',
-    ),
-    DonationItem(
-      title: 'Tas Sekolah Anak',
-      location: 'Bojongsoang',
-      imageUrl: '',
-    ),
-    DonationItem(title: 'Celana Pria', location: 'Bojongsoang', imageUrl: ''),
-  ];
-
   final UserService userService = UserService();
+  final DonationService donationService = DonationService();
   Map<String, dynamic>? _user;
   bool _isLoading = true;
+  late Future<List<DonationItem>> _donationItemsFuture;
 
   @override
   void initState() {
     super.initState();
     _getUserProfile();
+    _donationItemsFuture = donationService.getDonationItems();
   }
 
   Future<void> _getUserProfile() async {
@@ -55,11 +41,9 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         _isLoading = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
     }
   }
 
@@ -107,7 +91,9 @@ class _HomePageState extends State<HomePage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        _isLoading ? "Loading..." : "Halo ${_user?['username'] ?? 'User'}!",
+                        _isLoading
+                            ? "Loading..."
+                            : "Halo ${_user?['username'] ?? 'User'}!",
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 22,
@@ -122,11 +108,12 @@ class _HomePageState extends State<HomePage> {
                   ),
                   CircleAvatar(
                     radius: 24,
-                    backgroundImage: _user?['profile_url'] != null
-                        ? NetworkImage(_user!['profile_url'])
-                        : const NetworkImage(
-                            'https://i.pravatar.cc/150?img=1',
-                          ),
+                    backgroundImage:
+                        _user?['profile_url'] != null
+                            ? NetworkImage(_user!['profile_url'])
+                            : const NetworkImage(
+                              'https://i.pravatar.cc/150?img=12',
+                            ),
                   ),
                 ],
               ),
@@ -268,19 +255,40 @@ class _HomePageState extends State<HomePage> {
                 ),
               ],
             ),
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                childAspectRatio: 0.8,
-              ),
-              itemCount: dummyItems.length,
-              itemBuilder: (context, index) {
-                final item = dummyItems[index];
-                return DonationCard(item: item, onTap: () {});
+            FutureBuilder<List<DonationItem>>(
+              future: _donationItemsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text("Error: ${snapshot.error}"));
+                } else if (snapshot.hasData) {
+                  final items = snapshot.data!;
+                  return GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                      childAspectRatio: 0.8,
+                    ),
+                    itemCount: items.length,
+                    itemBuilder: (context, index) {
+                      final item = items[index];
+                      return DonationCard(item: item, onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DonationDetailPage(itemId: item.id),
+                          ),
+                        );
+                      });
+                    },
+                  );
+                } else {
+                  return const Center(child: Text("No donation items found."));
+                }
               },
             ),
           ],

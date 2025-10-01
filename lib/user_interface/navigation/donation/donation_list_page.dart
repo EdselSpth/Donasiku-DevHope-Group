@@ -1,6 +1,6 @@
-// lib/user_interface/donation/donation_list_page.dart
-
+import 'package:donasiku/user_interface/navigation/donation/donation_detail_page.dart';
 import 'package:donasiku/models/donation_item.dart';
+import 'package:donasiku/services/donation_service.dart';
 import 'package:donasiku/widget/donation_card.dart';
 import 'package:flutter/material.dart';
 
@@ -44,38 +44,14 @@ class _DonationListPageState extends State<DonationListPage> {
   int _selectedFilterIndex = 0;
   final List<String> _filters = ['All', 'Baju', 'Celana', 'Elektro', 'Sport'];
 
-  final List<DonationItem> _donationItems = [
-    DonationItem(
-      title: 'Baju Pria Dewasa',
-      location: 'Bojongsoang',
-      imageUrl:
-          'https://images.unsplash.com/photo-1593030103066-03337f7415e1?w=500',
-    ),
-    DonationItem(
-      title: 'Sepatu Anak',
-      location: 'Bojongsoang',
-      imageUrl:
-          'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=500',
-    ),
-    DonationItem(
-      title: 'Tas Sekolah Anak',
-      location: 'Bojongsoang',
-      imageUrl: '',
-    ),
-    DonationItem(title: 'Celana Pria', location: 'Bojongsoang', imageUrl: ''),
-    DonationItem(
-      title: 'Sepatu Dewasa',
-      location: 'Bojongsoang',
-      imageUrl:
-          'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500',
-    ),
-    DonationItem(
-      title: 'Celana Pria',
-      location: 'Bojongsoang',
-      imageUrl:
-          'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=500',
-    ),
-  ];
+  final DonationService donationService = DonationService();
+  late Future<List<DonationItem>> _donationItemsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _donationItemsFuture = donationService.getDonationItems();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -203,17 +179,43 @@ class _DonationListPageState extends State<DonationListPage> {
           ];
         },
         // 3. BODY SEKARANG HANYA BERISI GRIDVIEW
-        body: GridView.builder(
-          padding: const EdgeInsets.all(16),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            childAspectRatio: 0.8,
-          ),
-          itemCount: _donationItems.length,
-          itemBuilder: (context, index) {
-            return DonationCard(item: _donationItems[index], onTap: () {});
+        body: FutureBuilder<List<DonationItem>>(
+          future: _donationItemsFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text("Error: ${snapshot.error}"));
+            } else if (snapshot.hasData) {
+              final items = snapshot.data!;
+              return GridView.builder(
+                padding: const EdgeInsets.all(16),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                  childAspectRatio: 0.8,
+                ),
+                itemCount: items.length,
+                itemBuilder: (context, index) {
+                  return DonationCard(
+                    item: items[index],
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) =>
+                                  DonationDetailPage(itemId: items[index].id),
+                        ),
+                      );
+                    },
+                  );
+                },
+              );
+            } else {
+              return const Center(child: Text("No donation items found."));
+            }
           },
         ),
       ),

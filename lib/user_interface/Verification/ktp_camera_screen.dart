@@ -1,5 +1,5 @@
 import 'package:camera/camera.dart';
-import 'package:donasiku/user_interface/Verification/face_verification_screen.dart';
+import 'package:donasiku/user_interface/Verification/validation_form_screen.dart';
 import 'package:flutter/material.dart';
 import 'ktp_overlay_pointer.dart';
 
@@ -93,12 +93,12 @@ class _KtpCameraScreenState extends State<KtpCameraScreen> {
                         onTap: () async {
                           try {
                             final image = await _controller!.takePicture();
-                            // Navigasi ke halaman verifikasi wajah setelah foto diambil
+                            // Navigasi ke halaman form validasi setelah foto diambil
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder:
-                                    (context) => const FaceVerificationScreen(),
+                                    (context) => const VerificationFormScreen(),
                               ),
                             );
                           } catch (e) {

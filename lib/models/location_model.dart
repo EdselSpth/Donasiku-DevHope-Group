@@ -2,18 +2,18 @@
 import 'dart:convert';
 
 class Location {
-  final String code;
+  final int id;
   final String name;
 
-  Location({required this.code, required this.name});
+  Location({required this.id, required this.name});
 
   factory Location.fromJson(Map<String, dynamic> json) {
-    return Location(code: json['code'] as String, name: json['name'] as String);
+    return Location(id: json['area_id'] as int, name: json['area_name'] as String);
   }
 }
 
-// Helper function untuk parsing list
-List<Location> parseLocations(String responseBody) {
-  final parsed = jsonDecode(responseBody)['data'].cast<Map<String, dynamic>>();
+// Helper function untuk parsing list area
+List<Location> parseAreas(String responseBody) {
+  final parsed = jsonDecode(responseBody).cast<Map<String, dynamic>>();
   return parsed.map<Location>((json) => Location.fromJson(json)).toList();
 }

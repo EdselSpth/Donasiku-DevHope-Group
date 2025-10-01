@@ -1,7 +1,40 @@
+import 'package:donasiku/services/user/user_api_service.dart';
 import 'package:flutter/material.dart';
 
-class DetailAkunScreen extends StatelessWidget {
+class DetailAkunScreen extends StatefulWidget {
   const DetailAkunScreen({Key? key}) : super(key: key);
+
+  @override
+  State<DetailAkunScreen> createState() => _DetailAkunScreenState();
+}
+
+class _DetailAkunScreenState extends State<DetailAkunScreen> {
+  final UserService userService = UserService();
+  Map<String, dynamic>? _user;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _getUserProfile();
+  }
+
+  Future<void> _getUserProfile() async {
+    try {
+      final user = await userService.getProfile();
+      setState(() {
+        _user = user['user'];
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,158 +55,176 @@ class DetailAkunScreen extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // --- KARTU INFORMASI AKUN ---
-            Text(
-              'Informasi Akun',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                // REVISI: Warna teks menjadi lebih solid
-                color: Colors.black.withOpacity(0.8),
-              ),
-            ),
-            const SizedBox(height: 12),
-            Card(
-              // REVISI: Style Card agar sesuai mockup
-              elevation: 4,
-              shadowColor: Colors.purple.withOpacity(0.08),
-              color: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Padding(
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : SingleChildScrollView(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        const CircleAvatar(
-                          radius: 30,
-                          // TODO: Ganti dengan URL gambar profil dari backend
-                          backgroundImage: NetworkImage(
-                            'https://i.pravatar.cc/150?img=32',
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: OutlinedButton(
-                            onPressed: () {
-                              // Aksi untuk ganti foto
-                            },
-                            style: OutlinedButton.styleFrom(
-                              // REVISI: Warna tombol dan bentuk
-                              foregroundColor: Colors.blueAccent,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              side: const BorderSide(
-                                color: Colors.blueAccent,
-                                width: 1.5,
-                              ),
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                            ),
-                            child: const Text(
-                              'Ganti Foto',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ),
-                      ],
+                    // --- KARTU INFORMASI AKUN ---
+                    Text(
+                      'Informasi Akun',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        // REVISI: Warna teks menjadi lebih solid
+                        color: Colors.black.withOpacity(0.8),
+                      ),
                     ),
-                    const SizedBox(height: 4),
-                    Align(
-                      alignment: Alignment.centerLeft,
+                    const SizedBox(height: 12),
+                    Card(
+                      // REVISI: Style Card agar sesuai mockup
+                      elevation: 4,
+                      shadowColor: Colors.purple.withOpacity(0.08),
+                      color: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                       child: Padding(
-                        // REVISI: Padding disesuaikan agar rapi
-                        padding: const EdgeInsets.only(left: 76.0),
-                        child: Text(
-                          'Ukuran foto maksimal 5Mb.',
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 30,
+                                  backgroundImage: NetworkImage(
+                                    _user?['profile_url'] ??
+                                        'https://i.pravatar.cc/150?img=12',
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: OutlinedButton(
+                                    onPressed: () {
+                                      // Aksi untuk ganti foto
+                                    },
+                                    style: OutlinedButton.styleFrom(
+                                      // REVISI: Warna tombol dan bentuk
+                                      foregroundColor: Colors.blueAccent,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(30),
+                                      ),
+                                      side: const BorderSide(
+                                        color: Colors.blueAccent,
+                                        width: 1.5,
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 12,
+                                      ),
+                                    ),
+                                    child: const Text(
+                                      'Ganti Foto',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 4),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Padding(
+                                // REVISI: Padding disesuaikan agar rapi
+                                padding: const EdgeInsets.only(left: 76.0),
+                                child: Text(
+                                  'Ukuran foto maksimal 5Mb.',
+                                  style: TextStyle(
+                                    color: Colors.grey[600],
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            const Divider(),
+                            const SizedBox(height: 16),
+
+                            // REVISI: Menggunakan widget baru untuk layout yang sesuai
+                            _buildInfoRow(
+                              'Nama Akun',
+                              _user?['username'] ?? 'User',
+                            ),
+                            const SizedBox(height: 16),
+
+                            // TODO: Ganti value & status verifikasi dari backend
+                            _buildInfoRowWithVerification(
+                              'Role Akun',
+                              _user?['role'] ?? 'Donatur',
+                            ),
+                            const SizedBox(height: 16),
+
+                            // TODO: Ganti value dengan data nomor HP dari backend
+                            _buildInfoRowWithIcon(
+                              'No Handphone',
+                              _user?['phone'] ?? '-',
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // --- KARTU INFORMASI LAINNYA ---
+                    Text(
+                      'Informasi Lainnya',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black.withOpacity(0.8),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Card(
+                      // REVISI: Style Card disamakan
+                      elevation: 4,
+                      shadowColor: Colors.purple.withOpacity(0.08),
+                      color: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          radius: 20,
+                          backgroundImage: NetworkImage(
+                            _user?['profile_url'] ??
+                                'https://i.pravatar.cc/150?img=12',
+                          ),
+                        ),
+                        title: const Text(
+                          'Informasi Pribadi',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text(
+                          // TODO: Ganti dengan status kelengkapan data dari backend
+                          'Sudah Lengkap',
                           style: TextStyle(
                             color: Colors.grey[600],
                             fontSize: 12,
                           ),
                         ),
+                        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                        onTap: () {
+                          // Aksi ketika item di-tap
+                        },
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    const Divider(),
-                    const SizedBox(height: 16),
-
-                    // REVISI: Menggunakan widget baru untuk layout yang sesuai
-                    // TODO: Ganti value dengan data nama dari backend
-                    _buildInfoRow('Nama Akun', 'Zunadea Kusmiandita'),
-                    const SizedBox(height: 16),
-
-                    // TODO: Ganti value & status verifikasi dari backend
-                    _buildInfoRowWithVerification('Role Akun', 'Donatur'),
-                    const SizedBox(height: 16),
-
-                    // TODO: Ganti value dengan data nomor HP dari backend
-                    _buildInfoRowWithIcon('No Handphone', '+6285********56'),
                   ],
                 ),
               ),
-            ),
-            const SizedBox(height: 24),
-
-            // --- KARTU INFORMASI LAINNYA ---
-            Text(
-              'Informasi Lainnya',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black.withOpacity(0.8),
-              ),
-            ),
-            const SizedBox(height: 12),
-            Card(
-              // REVISI: Style Card disamakan
-              elevation: 4,
-              shadowColor: Colors.purple.withOpacity(0.08),
-              color: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: ListTile(
-                leading: const CircleAvatar(
-                  radius: 20,
-                  // TODO: Ganti dengan URL gambar profil dari backend
-                  backgroundImage: NetworkImage(
-                    'https://i.pravatar.cc/150?img=32',
-                  ),
-                ),
-                title: const Text(
-                  'Informasi Pribadi',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                subtitle: Text(
-                  // TODO: Ganti dengan status kelengkapan data dari backend
-                  'Sudah Lengkap',
-                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                ),
-                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                onTap: () {
-                  // Aksi ketika item di-tap
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 
   // REVISI TOTAL: Widget bantuan untuk membuat baris informasi (Label di kiri, Value di kanan)
   Widget _buildInfoRow(String label, String value) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(label, style: TextStyle(color: Colors.grey[600])),
-        const Spacer(), // Mendorong widget berikutnya ke kanan
         Flexible(
           child: Text(
             value,
