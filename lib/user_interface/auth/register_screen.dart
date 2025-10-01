@@ -14,7 +14,6 @@ class RegisterScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Ambil controller yang sudah di-inject
     final rc = Get.find<RoleController>();
 
     return Scaffold(

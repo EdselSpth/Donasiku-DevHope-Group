@@ -1,37 +1,33 @@
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:donasiku/models/location_model.dart';
 
 class LocationApiService {
-  final String _baseUrl = 'https://wilayah.id/api';
+  final String _baseUrl = 'http://10.0.2.2:3000';
+  final _storage = const FlutterSecureStorage();
 
-  Future<List<Location>> getProvinces() async {
-    final response = await http.get(Uri.parse('$_baseUrl/provinces.json'));
-    if (response.statusCode == 200) {
-      return parseLocations(response.body);
-    } else {
-      throw Exception('Gagal memuat provinsi');
-    }
-  }
+  Future<List<Location>> getAreas() async {
+    final token = await _storage.read(key: 'accessToken');
 
-  Future<List<Location>> getCities(String provinceCode) async {
-    final response = await http.get(
-      Uri.parse('$_baseUrl/regencies/$provinceCode.json'),
-    );
-    if (response.statusCode == 200) {
-      return parseLocations(response.body);
-    } else {
-      throw Exception('Gagal memuat kota/kabupaten');
-    }
-  }
+    try {
+      final response = await http.get(
+        Uri.parse('$_baseUrl/area/areas'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
 
-  Future<List<Location>> getSubDistricts(String cityCode) async {
-    final response = await http.get(
-      Uri.parse('$_baseUrl/districts/$cityCode.json'),
-    );
-    if (response.statusCode == 200) {
-      return parseLocations(response.body);
-    } else {
-      throw Exception('Gagal memuat kecamatan');
+      if (response.statusCode == 200) {
+        return parseAreas(response.body);
+      } else {
+        print(
+            '[LocationApiService] Failed to load areas. Status code: ${response.statusCode}');
+        print('[LocationApiService] Response body: ${response.body}');
+        throw Exception('Gagal memuat area');
+      }
+    } catch (e) {
+      print('[LocationApiService] Error fetching areas: $e');
+      rethrow;
     }
   }
 }

@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:donasiku/user_interface/navigation/donation/item_request_list_page.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-// ... (StatefulWidget, controller, dan dispose tetap sama) ...
 class ItemRequestPage extends StatefulWidget {
   const ItemRequestPage({super.key});
 
@@ -14,6 +17,68 @@ class _ItemRequestPageState extends State<ItemRequestPage> {
   final _quantityController = TextEditingController();
   final _originController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _storage = const FlutterSecureStorage();
+
+  Future<void> _submitRequest() async {
+    if (_itemNameController.text.isEmpty ||
+        _quantityController.text.isEmpty ||
+        _originController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill all required fields.')),
+      );
+      return;
+    }
+
+    // TODO: Replace with your actual IP address
+    const String apiUrl = 'http://localhost:3000/donate/requests';
+    final token = await _storage.read(key: 'token');
+
+    final message =
+        '${_itemNameController.text} - ${_descriptionController.text}';
+
+    final body = {
+      // TODO: These are mocked values. Replace with actual data from your app.
+      'category_id': '1',
+      'message': message,
+      'quantity': _quantityController.text,
+      'area_id': '1',
+      'address': _originController.text,
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode(body),
+      );
+
+      if (response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Request submitted successfully!')),
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => ItemRequestListPage()),
+        );
+      } else {
+        final responseData = json.decode(response.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Failed to submit request: ${responseData['message']}',
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('An error occurred: $e')));
+    }
+  }
 
   @override
   void dispose() {
@@ -43,9 +108,6 @@ class _ItemRequestPageState extends State<ItemRequestPage> {
                   const SizedBox(height: 20),
                   _buildInfoCard(),
                   const SizedBox(height: 20),
-
-                  // --- PERUBAHAN DI SINI ---
-                  // Kartu Form sekarang memiliki tombol yang bernavigasi
                   _buildFormCard(context),
                   const SizedBox(height: 20),
                 ],
@@ -75,7 +137,7 @@ class _ItemRequestPageState extends State<ItemRequestPage> {
             ),
           ),
         ),
-        const SizedBox(width: 48), 
+        const SizedBox(width: 48),
       ],
     );
   }
@@ -159,14 +221,7 @@ class _ItemRequestPageState extends State<ItemRequestPage> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ItemRequestListPage(),
-                    ),
-                  );
-                },
+                onPressed: _submitRequest,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF0D2C63),
                   foregroundColor: Colors.white,

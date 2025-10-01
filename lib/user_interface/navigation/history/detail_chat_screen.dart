@@ -5,10 +5,14 @@ import 'package:donasiku/models/history_model.dart';
 import 'package:donasiku/widget/chat_message_bubble.dart';
 
 class DetailChatScreen extends StatefulWidget {
-  // Menerima data dari halaman sebelumnya
   final ChatHistoryModel chatInfo;
+  final List<ChatMessage> messages;
 
-  const DetailChatScreen({super.key, required this.chatInfo});
+  const DetailChatScreen({
+    super.key,
+    required this.chatInfo,
+    required this.messages,
+  });
 
   @override
   State<DetailChatScreen> createState() => _DetailChatScreenState();
@@ -16,19 +20,6 @@ class DetailChatScreen extends StatefulWidget {
 
 class _DetailChatScreenState extends State<DetailChatScreen> {
   final TextEditingController _messageController = TextEditingController();
-
-  // Dummy data untuk percakapan
-  final List<ChatMessage> messages = [
-    ChatMessage(text: 'Hi zuna 🤝', timestamp: '11:31 AM', isMe: true),
-    ChatMessage(
-      text: 'apakah barangnya ada?',
-      timestamp: '11:31 AM',
-      isMe: true,
-    ),
-    ChatMessage(text: 'tentu ada', timestamp: '11:35 AM', isMe: false),
-    ChatMessage(text: 'saya cek ulang ya', timestamp: '11:31 AM', isMe: false),
-    ChatMessage(text: 'baik, terima kasih', timestamp: '11:31 AM', isMe: true),
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -54,18 +45,15 @@ class _DetailChatScreenState extends State<DetailChatScreen> {
       ),
       body: Column(
         children: [
-          // Bagian daftar pesan
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
-              reverse: false, // Menampilkan dari atas ke bawah
-              itemCount: messages.length,
+              itemCount: widget.messages.length,
               itemBuilder: (context, index) {
-                return ChatMessageBubble(message: messages[index]);
+                return ChatMessageBubble(message: widget.messages[index]);
               },
             ),
           ),
-          // Bagian input pesan
           _buildMessageInput(),
         ],
       ),
@@ -115,19 +103,17 @@ class _DetailChatScreenState extends State<DetailChatScreen> {
             IconButton(
               icon: const Icon(Icons.send, color: Color(0xFF0D2C63)),
               onPressed: () {
-                // Logika untuk mengirim pesan
                 if (_messageController.text.isNotEmpty) {
-                  // Tambahkan pesan ke list (untuk demo)
                   setState(() {
-                    messages.add(
+                    widget.messages.add(
                       ChatMessage(
                         text: _messageController.text,
-                        timestamp: "11:36 AM", // contoh
+                        timestamp: "11:36 AM", // Dummy timestamp
                         isMe: true,
                       ),
                     );
                   });
-                  _messageController.clear(); // Kosongkan input
+                  _messageController.clear();
                 }
               },
             ),

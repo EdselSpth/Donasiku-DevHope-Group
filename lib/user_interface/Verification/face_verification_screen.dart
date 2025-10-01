@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'ktp_camera_screen.dart';
 
 class FaceVerificationScreen extends StatelessWidget {
   const FaceVerificationScreen({Key? key}) : super(key: key);
@@ -103,8 +104,12 @@ class FaceVerificationScreen extends StatelessWidget {
               // Tombol "Lanjutkan"
               ElevatedButton(
                 onPressed: () {
-                  // TODO: Tambahkan logika untuk membuka kamera selfie
-                  print('Lanjutkan button pressed!');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const KtpCameraScreen(),
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),

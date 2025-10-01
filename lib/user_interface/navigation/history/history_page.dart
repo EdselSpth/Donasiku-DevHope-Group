@@ -1,5 +1,6 @@
 // lib/user_interface/navigation/history_page.dart
 
+import 'package:donasiku/user_interface/navigation/history/detail_chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:donasiku/models/history_model.dart';
 import 'package:donasiku/widget/chat_list_item.dart';
@@ -16,7 +17,7 @@ class _HistoryPageState extends State<HistoryPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  // ... (Data dummy tidak perlu diubah) ...
+  // --- DATA DUMMY TERPUSAT ---
   final List<DonationHistoryModel> donationHistory = [
     DonationHistoryModel(
       profileImageUrl: 'https://i.pravatar.cc/150?img=12',
@@ -38,16 +39,8 @@ class _HistoryPageState extends State<HistoryPage>
       itemName: 'Baju Dewasa Pria',
       status: DonationStatus.Dikirim,
     ),
-    DonationHistoryModel(
-      profileImageUrl: 'https://i.pravatar.cc/150?img=12',
-      donorName: 'Zunadea Kusmiandita',
-      role: 'Donatur',
-      destination: 'Tujuan Donasi',
-      quantity: '1 Pcs',
-      itemName: 'Baju Dewasa Pria',
-      status: DonationStatus.Dibatalkan,
-    ),
   ];
+
   final List<ChatHistoryModel> chatHistory = [
     ChatHistoryModel(
       profileImageUrl: 'https://i.pravatar.cc/150?img=1',
@@ -76,6 +69,30 @@ class _HistoryPageState extends State<HistoryPage>
       timestamp: 'Fri',
     ),
   ];
+
+  final Map<String, List<ChatMessage>> dummyMessages = {
+    'Kak Dias': [
+      ChatMessage(text: 'Hi zuna 🤝', timestamp: '11:31 AM', isMe: true),
+      ChatMessage(
+        text: 'apakah barangnya ada?',
+        timestamp: '11:31 AM',
+        isMe: true,
+      ),
+      ChatMessage(text: 'tentu ada', timestamp: '11:35 AM', isMe: false),
+    ],
+    'Edsel': [
+      ChatMessage(text: 'Ok, Halo semua', timestamp: '9:25 AM', isMe: false),
+      ChatMessage(text: 'Halo juga, Edsel!', timestamp: '9:26 AM', isMe: true),
+    ],
+    'Nabil': [
+      ChatMessage(text: 'Salam kenal ya...', timestamp: 'Fri', isMe: false),
+    ],
+    'Firdha': [
+      ChatMessage(text: 'Selamat berlibur!', timestamp: 'Fri', isMe: false),
+      ChatMessage(text: 'Terima kasih, Firdha!', timestamp: 'Fri', isMe: true),
+      ChatMessage(text: 'Kamu juga ya!', timestamp: 'Fri', isMe: true),
+    ],
+  };
 
   @override
   void initState() {
@@ -145,7 +162,6 @@ class _HistoryPageState extends State<HistoryPage>
                           labelColor: Colors.white,
                           unselectedLabelColor: Colors.black,
                           indicatorSize: TabBarIndicatorSize.tab,
-                          // --- FIX #2: HILANGKAN GARIS BAWAH TABBAR ---
                           dividerColor: Colors.transparent,
                           indicator: BoxDecoration(
                             color: const Color(0xFF0D2C63),
@@ -205,7 +221,24 @@ class _HistoryPageState extends State<HistoryPage>
             padding: EdgeInsets.zero,
             itemCount: chatHistory.length,
             itemBuilder: (context, index) {
-              return ChatListItem(chatItem: chatHistory[index]);
+              final chatItem = chatHistory[index];
+              final messages = dummyMessages[chatItem.name] ?? [];
+
+              return InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => DetailChatScreen(
+                            chatInfo: chatItem,
+                            messages: messages,
+                          ),
+                    ),
+                  );
+                },
+                child: ChatListItem(chatItem: chatItem),
+              );
             },
           ),
         ),

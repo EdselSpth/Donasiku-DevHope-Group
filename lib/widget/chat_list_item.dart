@@ -1,6 +1,5 @@
 // lib/widget/chat_list_item.dart
 
-import 'package:donasiku/user_interface/navigation/history/detail_chat_screen.dart'; // 1. Import halaman detail
 import 'package:flutter/material.dart';
 import 'package:donasiku/models/history_model.dart';
 
@@ -41,16 +40,6 @@ class ChatListItem extends StatelessWidget {
         chatItem.timestamp,
         style: const TextStyle(color: Colors.grey, fontSize: 12),
       ),
-      onTap: () {
-        // 2. Tambahkan navigasi di sini
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            // Buka DetailChatScreen dan kirim data 'chatItem'
-            builder: (context) => DetailChatScreen(chatInfo: chatItem),
-          ),
-        );
-      },
     );
   }
 }
