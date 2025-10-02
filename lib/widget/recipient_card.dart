@@ -1,5 +1,3 @@
-import 'package:donasiku/models/recipient_model.dart';
-import 'package:donasiku/user_interface/recipients/recipient_detail_page.dart'; // 1. Import halaman detail
 import 'package:flutter/material.dart';
 
 class RecipientCard extends StatelessWidget {

@@ -7,32 +7,27 @@ class AppNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Find the controller that manages our state
     final MainScreenController controller = Get.find<MainScreenController>();
 
-    // Obx widget rebuilds automatically when controller.selectedIndex changes
     return Obx(
       () => BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           // Item 1: Home
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home), // Icon when active
+            activeIcon: Icon(Icons.home),
             label: 'Home',
           ),
-          // Item 2: Donasi
           BottomNavigationBarItem(
-            icon: Icon(Icons.favorite_border),
-            activeIcon: Icon(Icons.favorite),
+            icon: ImageIcon(AssetImage('Assets/ikon_donasi_navbar.png')),
+            activeIcon: ImageIcon(AssetImage('Assets/ikon_donasi_navbar.png')),
             label: 'Donasi',
           ),
-          // Item 3: Riwayat
           BottomNavigationBarItem(
             icon: Icon(Icons.history_outlined),
             activeIcon: Icon(Icons.history),
             label: 'Riwayat',
           ),
-          // Item 4: Profile
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),
             activeIcon: Icon(Icons.person),
@@ -46,6 +41,7 @@ class AppNavigationBar extends StatelessWidget {
         unselectedItemColor: Colors.grey,
         showUnselectedLabels: true,
         type: BottomNavigationBarType.fixed,
+        backgroundColor: Colors.white,
       ),
     );
   }

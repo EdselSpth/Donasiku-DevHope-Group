@@ -1,25 +1,10 @@
 import 'package:donasiku/models/donation_item.dart';
-import 'package:donasiku/services/donation_service.dart';
 import 'package:flutter/material.dart';
 
-class DonationDetailPage extends StatefulWidget {
-  final String itemId;
+class DonationDetailPage extends StatelessWidget {
+  final DonationItem item;
 
-  const DonationDetailPage({Key? key, required this.itemId}) : super(key: key);
-
-  @override
-  _DonationDetailPageState createState() => _DonationDetailPageState();
-}
-
-class _DonationDetailPageState extends State<DonationDetailPage> {
-  final DonationService donationService = DonationService();
-  late Future<DonationItem> _donationItemFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _donationItemFuture = donationService.getDonationItemById(widget.itemId);
-  }
+  const DonationDetailPage({Key? key, required this.item}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -38,35 +23,21 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
         elevation: 1,
         centerTitle: true,
       ),
-      body: FutureBuilder<DonationItem>(
-        future: _donationItemFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
-          } else if (snapshot.hasData) {
-            final item = snapshot.data!;
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Foto Barang',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 12),
-                  _buildPhotoCard(item),
-                  const SizedBox(height: 24),
-                  _buildDetailsCard(item),
-                ],
-              ),
-            );
-          } else {
-            return const Center(child: Text("Item not found."));
-          }
-        },
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Foto Barang',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            _buildPhotoCard(item),
+            const SizedBox(height: 24),
+            _buildDetailsCard(item),
+          ],
+        ),
       ),
       bottomNavigationBar: _buildActionButtons(context),
     );

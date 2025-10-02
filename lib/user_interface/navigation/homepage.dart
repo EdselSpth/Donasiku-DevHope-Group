@@ -1,4 +1,6 @@
 
+import 'package:donasiku/state_management/main_screen_controller.dart';
+import 'package:get/get.dart';
 import 'package:donasiku/user_interface/navigation/donation/donation_detail_page.dart';
 import 'package:donasiku/services/donation_service.dart';
 import 'package:donasiku/services/user/user_api_service.dart';
@@ -150,10 +152,8 @@ class _HomePageState extends State<HomePage> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => DonationPage()),
-                      );
+                      final MainScreenController controller = Get.find<MainScreenController>();
+                      controller.changeTabIndex(1);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF0D2C63),
@@ -280,7 +280,7 @@ class _HomePageState extends State<HomePage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => DonationDetailPage(itemId: item.id),
+                            builder: (context) => DonationDetailPage(item: item),
                           ),
                         );
                       });
