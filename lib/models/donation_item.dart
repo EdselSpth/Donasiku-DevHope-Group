@@ -19,10 +19,16 @@ class DonationItem {
     return DonationItem(
       id: (json['item_id'] ?? '').toString(),
       title: (json['name'] ?? '').toString(),
-      location: json['area'] != null ? (json['area']['name'] ?? '').toString() : 'Unknown',
+      location:
+          json['area'] != null
+              ? (json['area']['name'] ?? '').toString()
+              : 'Unknown',
       imageUrl: (json['image'] ?? '').toString(),
       description: (json['description'] ?? '').toString(),
-      owner: json['donor'] != null ? (json['donor']['name'] ?? '').toString() : 'Unknown',
+      owner:
+          json['donor'] != null
+              ? (json['donor']['name'] ?? '').toString()
+              : 'Unknown',
     );
   }
 }

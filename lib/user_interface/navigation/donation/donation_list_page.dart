@@ -206,7 +206,7 @@ class _DonationListPageState extends State<DonationListPage> {
                         MaterialPageRoute(
                           builder:
                               (context) =>
-                                  DonationDetailPage(itemId: items[index].id),
+                                  DonationDetailPage(item: items[index]),
                         ),
                       );
                     },

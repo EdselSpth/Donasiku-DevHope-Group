@@ -25,7 +25,7 @@ class _KtpCameraScreenState extends State<KtpCameraScreen> {
     _cameras = await availableCameras();
     if (_cameras != null && _cameras!.isNotEmpty) {
       _controller = CameraController(
-        _cameras![0], // Gunakan kamera belakang
+        _cameras![0],
         ResolutionPreset.high,
         enableAudio: false,
       );
@@ -56,13 +56,10 @@ class _KtpCameraScreenState extends State<KtpCameraScreen> {
       body: SafeArea(
         child: Stack(
           children: [
-            // LAYER 1: Camera Preview
             Center(child: CameraPreview(_controller!)),
 
-            // LAYER 2: Overlay
             CustomPaint(size: Size.infinite, painter: KtpOverlayPainter()),
 
-            // LAYER 3: UI Elements
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -93,7 +90,6 @@ class _KtpCameraScreenState extends State<KtpCameraScreen> {
                         onTap: () async {
                           try {
                             final image = await _controller!.takePicture();
-                            // Navigasi ke halaman form validasi setelah foto diambil
                             Navigator.push(
                               context,
                               MaterialPageRoute(
