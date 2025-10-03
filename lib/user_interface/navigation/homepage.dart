@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:donasiku/user_interface/navigation/donation/donation_list_page.dart';
 import 'package:donasiku/user_interface/navigation/donation/donation_detail_page.dart';
 import 'package:donasiku/user_interface/recipients/recipient_list_page.dart';
-import 'package:donasiku/user_interface/navigation/donation/donation_page.dart';
 import 'package:donasiku/models/donation_item.dart';
 import 'package:donasiku/widget/donation_card.dart';
+import 'package:get/get.dart';
+import 'package:donasiku/state_management/main_screen_controller.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({super.key});
@@ -48,6 +49,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final MainScreenController controller = Get.find<MainScreenController>();
     return Scaffold(
       backgroundColor: Colors.grey[100],
       // 1. GUNAKAN STACK UNTUK MENUMPUK WIDGET
@@ -63,6 +65,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildHeader(BuildContext context) {
+    final MainScreenController controller = Get.find<MainScreenController>();
     // Header tidak berubah, tetap menggunakan Stack internal untuk kartu
     return Stack(
       clipBehavior: Clip.none,
@@ -149,10 +152,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => DonationPage()),
-                      );
+                      controller.changeTabIndex(1);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF0D2C63),

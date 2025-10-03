@@ -38,16 +38,47 @@ class DonationListPage extends StatefulWidget {
 }
 
 class _DonationListPageState extends State<DonationListPage> {
+  final DonationService donationService = DonationService();
+  final TextEditingController _searchController = TextEditingController();
+
+  List<DonationItem> _allItems = [];
+  List<DonationItem> _filteredItems = [];
   int _selectedFilterIndex = 0;
   final List<String> _filters = ['All', 'Baju', 'Celana', 'Elektro', 'Sport'];
 
-  final DonationService donationService = DonationService();
   late Future<List<DonationItem>> _donationItemsFuture;
 
   @override
   void initState() {
     super.initState();
     _donationItemsFuture = donationService.getDonationItems();
+    _donationItemsFuture.then((items) {
+      setState(() {
+        _allItems = items;
+        _filteredItems = items;
+      });
+    });
+    _searchController.addListener(_filterDonations);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _filterDonations() {
+    final searchQuery = _searchController.text.toLowerCase();
+    final selectedCategory = _filters[_selectedFilterIndex];
+
+    setState(() {
+      _filteredItems = _allItems.where((item) {
+        final titleMatches = item.title.toLowerCase().contains(searchQuery);
+        final categoryMatches = selectedCategory == 'All' ||
+            item.title.toLowerCase().contains(selectedCategory.toLowerCase());
+        return titleMatches && categoryMatches;
+      }).toList();
+    });
   }
 
   @override
@@ -137,6 +168,7 @@ class _DonationListPageState extends State<DonationListPage> {
                         children: [
                           Expanded(
                             child: TextField(
+                              controller: _searchController,
                               decoration: InputDecoration(
                                 hintText: 'Cari barang yang kamu inginkan',
                                 prefixIcon: const Icon(
@@ -201,7 +233,9 @@ class _DonationListPageState extends State<DonationListPage> {
             } else if (snapshot.hasError) {
               return Center(child: Text("Error: ${snapshot.error}"));
             } else if (snapshot.hasData) {
-              final items = snapshot.data!;
+              if (_filteredItems.isEmpty && _searchController.text.isNotEmpty) {
+                return const Center(child: Text("No items match your search."));
+              }
               return GridView.builder(
                 padding: const EdgeInsets.all(16),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -210,9 +244,9 @@ class _DonationListPageState extends State<DonationListPage> {
                   mainAxisSpacing: 16,
                   childAspectRatio: 0.8,
                 ),
-                itemCount: items.length,
+                itemCount: _filteredItems.length,
                 itemBuilder: (context, index) {
-                  final item = items[index];
+                  final item = _filteredItems[index];
                   return DonationCard(
                     item: item,
                     onTap: () {
@@ -257,6 +291,7 @@ class _DonationListPageState extends State<DonationListPage> {
               onSelected: (selected) {
                 setState(() {
                   _selectedFilterIndex = index;
+                  _filterDonations();
                 });
               },
               backgroundColor: Colors.white,
