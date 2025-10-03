@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:donasiku/widget/donation_option_card.dart';
 import 'package:donasiku/user_interface/navigation/donation/add_donation_page.dart';
 import 'package:donasiku/user_interface/navigation/donation/item_request_page.dart'; // <-- 1. IMPORT HALAMAN BARU
+import 'package:donasiku/user_interface/navigation/donation/item_request_list_page.dart';
 
 class DonationPage extends StatelessWidget {
   const DonationPage({super.key});
@@ -84,6 +85,23 @@ class DonationPage extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (context) => const ItemRequestPage(),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Kartu Opsi 3: Semua Permintaan
+                    DonationOptionCard(
+                      iconPath: 'Assets/gambar-permintaan-barang.png',
+                      title: 'Semua Permintaan',
+                      subtitle: 'Lihat semua permintaan barang yang tersedia',
+                      buttonText: 'Lihat Permintaan',
+                      onButtonPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ItemRequestListPage(),
                           ),
                         );
                       },
