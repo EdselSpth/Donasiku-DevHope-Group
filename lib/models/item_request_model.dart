@@ -1,5 +1,3 @@
-// lib/models/item_request_model.dart
-
 class ItemRequestModel {
   final int requestId;
   final int? itemId;

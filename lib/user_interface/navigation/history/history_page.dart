@@ -1,5 +1,3 @@
-// lib/user_interface/navigation/history_page.dart
-
 import 'package:donasiku/services/donation_service.dart';
 import 'package:donasiku/user_interface/navigation/history/detail_chat_screen.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +18,6 @@ class _HistoryPageState extends State<HistoryPage>
   late Future<List<DonationHistoryModel>> _donationHistoryFuture;
   final DonationService _donationService = DonationService();
 
-  // --- DATA DUMMY TERPUSAT ---
   final List<ChatHistoryModel> chatHistory = [
     ChatHistoryModel(
       profileImageUrl: 'https://i.pravatar.cc/150?img=1',

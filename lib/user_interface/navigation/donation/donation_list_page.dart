@@ -1,20 +1,19 @@
 import 'package:donasiku/user_interface/navigation/donation/donation_detail_page.dart';
 import 'package:donasiku/models/donation_item.dart';
-import 'package:donasiku/models/history_model.dart';
 import 'package:donasiku/services/donation_service.dart';
 import 'package:donasiku/widget/donation_card.dart';
+import 'package:donasiku/widget/filter_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 
-// 1. BUAT CLASS HELPER BARU DI DALAM FILE YANG SAMA
 class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   _SliverAppBarDelegate(this._tabBar);
 
   final Widget _tabBar;
 
   @override
-  double get minExtent => 60; // Tinggi minimal saat di-scroll
+  double get minExtent => 60;
   @override
-  double get maxExtent => 60; // Tinggi maksimal saat normal
+  double get maxExtent => 60;
 
   @override
   Widget build(
@@ -22,10 +21,7 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
     double shrinkOffset,
     bool overlapsContent,
   ) {
-    return Container(
-      color: const Color(0xFFF8F9FA), // Samakan dengan background body
-      child: _tabBar,
-    );
+    return Container(color: const Color(0xFFF8F9FA), child: _tabBar);
   }
 
   @override
@@ -46,12 +42,12 @@ class _DonationListPageState extends State<DonationListPage> {
   final List<String> _filters = ['All', 'Baju', 'Celana', 'Elektro', 'Sport'];
 
   final DonationService donationService = DonationService();
-  late Future<List<DonationHistoryModel>> _donationHistoryFuture;
+  late Future<List<DonationItem>> _donationItemsFuture;
 
   @override
   void initState() {
     super.initState();
-    _donationHistoryFuture = donationService.getActiveDonations();
+    _donationItemsFuture = donationService.getDonationItems();
   }
 
   @override
@@ -59,16 +55,15 @@ class _DonationListPageState extends State<DonationListPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       body: NestedScrollView(
-        // --- PERUBAHAN UTAMA DI SINI ---
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
             SliverAppBar(
               backgroundColor: const Color(0xFF0D2C63),
               leading: const BackButton(color: Colors.white),
               pinned: true,
-              floating: false, // Floating dimatikan agar lebih stabil
+              floating: false,
               title: const Text(
-                'Barang Donasiku',
+                'Barang Donasi',
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -89,7 +84,18 @@ class _DonationListPageState extends State<DonationListPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: InkWell(
                         onTap: () {
-                          /* Logika buka picker lokasi */
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(20),
+                              ),
+                            ),
+                            builder: (context) {
+                              return const FilterBottomSheet();
+                            },
+                          );
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(
@@ -159,7 +165,18 @@ class _DonationListPageState extends State<DonationListPage> {
                                 color: Color(0xFF0D2C63),
                               ),
                               onPressed: () {
-                                /* Logika buka filter */
+                                showModalBottomSheet(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(20),
+                                    ),
+                                  ),
+                                  builder: (context) {
+                                    return const FilterBottomSheet();
+                                  },
+                                );
                               },
                             ),
                           ),
@@ -170,18 +187,14 @@ class _DonationListPageState extends State<DonationListPage> {
                 ),
               ),
             ),
-            // 2. TAMBAHKAN SLIVER BARU UNTUK FILTER
             SliverPersistentHeader(
-              delegate: _SliverAppBarDelegate(
-                _buildFilters(), // Masukkan widget filter ke delegate
-              ),
-              pinned: true, // "Tempelkan" di atas
+              delegate: _SliverAppBarDelegate(_buildFilters()),
+              pinned: true,
             ),
           ];
         },
-        // 3. BODY SEKARANG HANYA BERISI GRIDVIEW
-        body: FutureBuilder<List<DonationHistoryModel>>(
-          future: _donationHistoryFuture,
+        body: FutureBuilder<List<DonationItem>>(
+          future: _donationItemsFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -199,25 +212,17 @@ class _DonationListPageState extends State<DonationListPage> {
                 ),
                 itemCount: items.length,
                 itemBuilder: (context, index) {
-                  final historyItem = items[index];
-                  final donationItem = DonationItem(
-                    id: historyItem.itemId,
-                    title: historyItem.itemName,
-                    location: historyItem.destination,
-                    imageUrl: historyItem.itemImageUrl ?? '',
-                    description: historyItem.description,
-                    owner: historyItem.donorName,
-                  );
+                  final item = items[index];
                   return DonationCard(
-                    item: donationItem,
+                    item: item,
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder:
                               (context) => DonationDetailPage(
-                                item: donationItem,
-                                donationId: donationItem.id,
+                                item: item,
+                                donationId: item.id,
                               ),
                         ),
                       );
@@ -235,7 +240,6 @@ class _DonationListPageState extends State<DonationListPage> {
   }
 
   Widget _buildFilters() {
-    // ... (kode _buildFilters tidak berubah)
     return Container(
       color: const Color(0xFFF8F9FA),
       height: 60,

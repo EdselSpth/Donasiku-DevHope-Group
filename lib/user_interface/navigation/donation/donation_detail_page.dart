@@ -26,10 +26,8 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
     });
 
     try {
-      // The donationId is now passed to the widget
       final donationId = widget.donationId;
 
-      // Update the status to 'completed'
       final success = await _donationService.updateDonationStatus(
         donationId,
         'completed',
@@ -42,7 +40,6 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
             backgroundColor: Colors.green,
           ),
         );
-        // 5. Navigate back to the previous page
         Navigator.of(context).pop();
       } else {
         throw Exception('Gagal memperbarui status donasi.');
