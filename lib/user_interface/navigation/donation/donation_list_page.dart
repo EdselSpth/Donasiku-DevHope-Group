@@ -208,21 +208,21 @@ class _DonationListPageState extends State<DonationListPage> {
                     description: historyItem.description,
                     owner: historyItem.donorName,
                   );
-                    return DonationCard(
-                      item: donationItem,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder:
-                                (context) => DonationDetailPage(
-                                  item: donationItem,
-                                  donationId: donationItem.id,
-                                ),
-                          ),
-                        );
-                      },
-                    );
+                  return DonationCard(
+                    item: donationItem,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) => DonationDetailPage(
+                                item: donationItem,
+                                donationId: donationItem.id,
+                              ),
+                        ),
+                      );
+                    },
+                  );
                 },
               );
             } else {

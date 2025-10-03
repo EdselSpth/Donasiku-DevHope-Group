@@ -6,7 +6,11 @@ class DonationDetailPage extends StatefulWidget {
   final DonationItem item;
   final String donationId;
 
-  const DonationDetailPage({Key? key, required this.item, required this.donationId}) : super(key: key);
+  const DonationDetailPage({
+    Key? key,
+    required this.item,
+    required this.donationId,
+  }) : super(key: key);
 
   @override
   _DonationDetailPageState createState() => _DonationDetailPageState();
@@ -26,8 +30,10 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
       final donationId = widget.donationId;
 
       // Update the status to 'completed'
-      final success =
-          await _donationService.updateDonationStatus(donationId, 'completed');
+      final success = await _donationService.updateDonationStatus(
+        donationId,
+        'completed',
+      );
 
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -257,16 +263,17 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: _isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        ),
-                      )
-                    : const Text('Setujui'),
+                child:
+                    _isLoading
+                        ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                        : const Text('Setujui'),
               ),
             ),
           ],
