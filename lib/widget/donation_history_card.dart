@@ -1,5 +1,3 @@
-// lib/widget/donation_history_card.dart
-
 import 'package:flutter/material.dart';
 import 'package:donasiku/models/history_model.dart';
 
@@ -8,7 +6,6 @@ class DonationHistoryCard extends StatelessWidget {
 
   const DonationHistoryCard({super.key, required this.historyItem});
 
-  // Helper widget untuk membuat label status donasi
   Widget _buildStatusChip(DonationStatus status) {
     Color chipColor;
     String statusText;
@@ -25,6 +22,14 @@ class DonationHistoryCard extends StatelessWidget {
       case DonationStatus.Dibatalkan:
         chipColor = Colors.red;
         statusText = 'Dibatalkan';
+        break;
+      case DonationStatus.Pending:
+        chipColor = Colors.blue;
+        statusText = 'Pending';
+        break;
+      case DonationStatus.InProgress:
+        chipColor = Colors.purple;
+        statusText = 'In Progress';
         break;
     }
 
@@ -124,9 +129,8 @@ class DonationHistoryCard extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // FIX #1: Menggunakan Expanded dengan flex untuk membagi ruang
                 Expanded(
-                  flex: 3, // Memberi porsi ruang lebih besar
+                  flex: 3,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -138,7 +142,7 @@ class DonationHistoryCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  flex: 2, // Memberi porsi ruang lebih kecil
+                  flex: 2,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -154,14 +158,12 @@ class DonationHistoryCard extends StatelessWidget {
                       if (historyItem.itemImageUrl != null)
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          // FIX #2: Menambahkan errorBuilder untuk menangani gambar yang gagal dimuat
                           child: Image.network(
                             historyItem.itemImageUrl!,
                             width: 80,
                             height: 80,
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
-                              // Tampilkan ini jika gambar error
                               return Container(
                                 width: 80,
                                 height: 80,

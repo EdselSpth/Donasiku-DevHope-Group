@@ -9,6 +9,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 // Model baru yang cocok dengan response API
 class ApiRequest {
   final int requestId;
+  final int? itemId;
   final String status;
   final String message;
   final int quantity;
@@ -18,6 +19,7 @@ class ApiRequest {
 
   ApiRequest({
     required this.requestId,
+    this.itemId,
     required this.status,
     required this.message,
     required this.quantity,
@@ -29,6 +31,7 @@ class ApiRequest {
   factory ApiRequest.fromJson(Map<String, dynamic> json) {
     return ApiRequest(
       requestId: json['request_id'] ?? 0,
+      itemId: json['item'] != null ? json['item']['item_id'] : null,
       status: json['status'] ?? 'Pending',
       message: json['message'] ?? '',
       quantity: json['quantity'] ?? 0,
@@ -92,6 +95,8 @@ class _ItemRequestListPageState extends State<ItemRequestListPage> {
     }
 
     return ItemRequestModelDetail(
+      requestId: apiRequest.requestId,
+      itemId: apiRequest.itemId,
       requesterLogoUrl: 'Assets/dinsos_logo.png', // Placeholder
       itemName: itemName,
       recipient: apiRequest.userName,

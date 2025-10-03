@@ -1,10 +1,59 @@
 import 'package:donasiku/models/donation_item.dart';
+import 'package:donasiku/services/donation_service.dart';
 import 'package:flutter/material.dart';
 
-class DonationDetailPage extends StatelessWidget {
+class DonationDetailPage extends StatefulWidget {
   final DonationItem item;
+  final String donationId;
 
-  const DonationDetailPage({Key? key, required this.item}) : super(key: key);
+  const DonationDetailPage({Key? key, required this.item, required this.donationId}) : super(key: key);
+
+  @override
+  _DonationDetailPageState createState() => _DonationDetailPageState();
+}
+
+class _DonationDetailPageState extends State<DonationDetailPage> {
+  bool _isLoading = false;
+  final DonationService _donationService = DonationService();
+
+  Future<void> _approveDonation() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // The donationId is now passed to the widget
+      final donationId = widget.donationId;
+
+      // Update the status to 'completed'
+      final success =
+          await _donationService.updateDonationStatus(donationId, 'completed');
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Donasi berhasil disetujui!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        // 5. Navigate back to the previous page
+        Navigator.of(context).pop();
+      } else {
+        throw Exception('Gagal memperbarui status donasi.');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +82,9 @@ class DonationDetailPage extends StatelessWidget {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
-            _buildPhotoCard(item),
+            _buildPhotoCard(widget.item),
             const SizedBox(height: 24),
-            _buildDetailsCard(item),
+            _buildDetailsCard(widget.item),
           ],
         ),
       ),
@@ -199,9 +248,7 @@ class DonationDetailPage extends StatelessWidget {
             const SizedBox(width: 16),
             Expanded(
               child: ElevatedButton(
-                onPressed: () {
-                  // TODO: Tambahkan logika untuk menyetujui donasi
-                },
+                onPressed: _isLoading ? null : _approveDonation,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   backgroundColor: const Color(0xFF0D2C63),
@@ -210,7 +257,16 @@ class DonationDetailPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text('Setujui'),
+                child: _isLoading
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : const Text('Setujui'),
               ),
             ),
           ],

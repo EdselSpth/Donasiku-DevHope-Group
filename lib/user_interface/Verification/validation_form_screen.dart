@@ -206,10 +206,7 @@ class _VerificationFormScreenState extends State<VerificationFormScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
+          Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           TextField(
             controller: controller,
@@ -220,8 +217,10 @@ class _VerificationFormScreenState extends State<VerificationFormScreen> {
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
             ),
           ),
         ],

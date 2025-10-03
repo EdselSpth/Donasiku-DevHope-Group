@@ -30,9 +30,10 @@ class _KtpCameraScreenState extends State<KtpCameraScreen> {
     _cameras = await availableCameras();
     if (_cameras != null && _cameras!.isNotEmpty) {
       // Use front camera for face, back camera for KTP
-      final camera = widget.cameraMode == CameraMode.face && _cameras!.length > 1
-          ? _cameras![1]
-          : _cameras![0];
+      final camera =
+          widget.cameraMode == CameraMode.face && _cameras!.length > 1
+              ? _cameras![1]
+              : _cameras![0];
       _controller = CameraController(
         camera,
         ResolutionPreset.high,
@@ -107,16 +108,18 @@ class _KtpCameraScreenState extends State<KtpCameraScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      const FaceVerificationScreen(),
+                                  builder:
+                                      (context) =>
+                                          const FaceVerificationScreen(),
                                 ),
                               );
                             } else {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      const VerificationFormScreen(),
+                                  builder:
+                                      (context) =>
+                                          const VerificationFormScreen(),
                                 ),
                               );
                             }
