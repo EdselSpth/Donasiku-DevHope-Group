@@ -40,7 +40,7 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
                 return ListTile(
                   title: Text(area.name),
                   onTap: () {
-                    Navigator.pop(context, area.name);
+                    Navigator.pop(context, area);
                   },
                 );
               },

@@ -1,12 +1,45 @@
-// lib/user_interface/donation/item_request_list_page.dart
-
+import 'dart:convert';
 import 'package:donasiku/models/item_request_model.dart';
-import 'package:donasiku/widget/filter_bottom_sheet.dart'; // 1. Import widget baru
+import 'package:donasiku/widget/filter_bottom_sheet.dart';
 import 'package:donasiku/widget/item_request_card.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+// Model baru yang cocok dengan response API
+class ApiRequest {
+  final int requestId;
+  final String status;
+  final String message;
+  final int quantity;
+  final String address;
+  final DateTime createdAt;
+  final String userName;
+
+  ApiRequest({
+    required this.requestId,
+    required this.status,
+    required this.message,
+    required this.quantity,
+    required this.address,
+    required this.createdAt,
+    required this.userName,
+  });
+
+  factory ApiRequest.fromJson(Map<String, dynamic> json) {
+    return ApiRequest(
+      requestId: json['request_id'] ?? 0,
+      status: json['status'] ?? 'Pending',
+      message: json['message'] ?? '',
+      quantity: json['quantity'] ?? 0,
+      address: json['address'] ?? 'No address',
+      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : DateTime.now(),
+      userName: json['user']?['name'] ?? 'Unknown User',
+    );
+  }
+}
 
 class ItemRequestListPage extends StatefulWidget {
-  // ... (kode lainnya tetap sama)
   const ItemRequestListPage({super.key});
 
   @override
@@ -14,38 +47,62 @@ class ItemRequestListPage extends StatefulWidget {
 }
 
 class _ItemRequestListPageState extends State<ItemRequestListPage> {
-  // ... (state dan data dummy tidak berubah)
+  final List<String> _filters = ['All', 'Komunitas', 'Panti Asuhan', 'Panti Jompo'];
   int _selectedFilterIndex = 0;
-  final List<String> _filters = [
-    'All',
-    'Komunitas',
-    'Panti Asuhan',
-    'Panti Jompo',
-  ];
-  final List<ItemRequestModelDetail> _requests = [
-    ItemRequestModelDetail(
-      requesterLogoUrl: 'Assets/dinsos_logo.png',
-      itemName: 'Pakaian Anak',
-      recipient: 'Panti Asuhan Ceria Bandung',
-      location: 'JL. Pandjaitan Bandung',
-      quantity: '5 Pcs',
-      description:
-          'Untuk kebutuhan anak-anak untuk mengikuti volunter, kami membutuhkan pakaian yang cerah berwarna biru untuk pria dan wanita usia 17 tahun.',
-    ),
-    ItemRequestModelDetail(
-      requesterLogoUrl: 'Assets/dinsos_logo.png',
-      itemName: 'Buku Pelajaran SMA',
-      recipient: 'Komunitas Belajar Bersama',
-      location: 'Gedung Pemuda Jakarta',
-      quantity: '20 Buku',
-      description:
-          'Dibutuhkan buku pelajaran SMA kelas 10-12 untuk program bimbingan belajar gratis bagi anak-anak kurang mampu.',
-    ),
-  ];
+  late Future<List<ApiRequest>> _requestsFuture;
+  final _storage = const FlutterSecureStorage();
+
+  @override
+  void initState() {
+    super.initState();
+    _requestsFuture = _fetchRequests();
+  }
+
+  Future<List<ApiRequest>> _fetchRequests() async {
+    final token = await _storage.read(key: 'accessToken');
+    if (token == null) {
+      // Handle token not found, maybe pop back to login
+      throw Exception('Authentication Token not found');
+    }
+
+    final response = await http.get(
+      Uri.parse('http://10.0.2.2:3000/donate/requests'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final List<dynamic> requestList = data['requests'];
+      return requestList.map((json) => ApiRequest.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load requests');
+    }
+  }
+
+  ItemRequestModelDetail _mapApiRequestToModelDetail(ApiRequest apiRequest) {
+    String itemName = 'Unknown Item';
+    String description = apiRequest.message;
+
+    List<String> messageParts = apiRequest.message.split(' - ');
+    if (messageParts.length > 1) {
+      itemName = messageParts.first;
+      description = messageParts.sublist(1).join(' - ');
+    }
+
+    return ItemRequestModelDetail(
+      requesterLogoUrl: 'Assets/dinsos_logo.png', // Placeholder
+      itemName: itemName,
+      recipient: apiRequest.userName,
+      location: apiRequest.address,
+      quantity: '${apiRequest.quantity} Pcs',
+      description: description,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    // ... (kode build tidak berubah)
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: _buildAppBar(),
@@ -61,14 +118,29 @@ class _ItemRequestListPageState extends State<ItemRequestListPage> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: _requests.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12.0),
-                  child: ItemRequestCard(request: _requests[index]),
-                );
+            child: FutureBuilder<List<ApiRequest>>(
+              future: _requestsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text('No requests found.'));
+                } else {
+                  final requests = snapshot.data!;
+                  return ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: requests.length,
+                    itemBuilder: (context, index) {
+                      final requestModelDetail = _mapApiRequestToModelDetail(requests[index]);
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12.0),
+                        child: ItemRequestCard(request: requestModelDetail),
+                      );
+                    },
+                  );
+                }
               },
             ),
           ),
@@ -79,7 +151,6 @@ class _ItemRequestListPageState extends State<ItemRequestListPage> {
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
-      // ... (properti AppBar lainnya tidak berubah)
       backgroundColor: const Color(0xFF0D2C63),
       leading: const BackButton(color: Colors.white),
       title: const Text(
@@ -127,21 +198,17 @@ class _ItemRequestListPageState extends State<ItemRequestListPage> {
                 ),
                 child: IconButton(
                   icon: const Icon(Icons.filter_list, color: Color(0xFF0D2C63)),
-                  // --- PERUBAHAN DI SINI ---
                   onPressed: () {
-                    // 2. Panggil showModalBottomSheet
                     showModalBottomSheet(
                       context: context,
-                      // Membuat sheet bisa di-scroll jika kontennya panjang
                       isScrollControlled: true,
-                      // Memberi bentuk rounded corner di atas
                       shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.vertical(
                           top: Radius.circular(20),
                         ),
                       ),
                       builder: (context) {
-                        return const FilterBottomSheet(); // 3. Tampilkan widget filter
+                        return const FilterBottomSheet();
                       },
                     );
                   },
@@ -157,7 +224,6 @@ class _ItemRequestListPageState extends State<ItemRequestListPage> {
     );
   }
 
-  // ... (kode _buildFilters tidak berubah)
   Widget _buildFilters() {
     return SizedBox(
       height: 60,
@@ -187,9 +253,7 @@ class _ItemRequestListPageState extends State<ItemRequestListPage> {
                 borderRadius: BorderRadius.circular(20),
                 side: BorderSide(
                   color:
-                      isSelected
-                          ? const Color(0xFF0D2C63)
-                          : Colors.grey.shade300,
+                      isSelected ? const Color(0xFF0D2C63) : Colors.grey.shade300,
                 ),
               ),
             ),

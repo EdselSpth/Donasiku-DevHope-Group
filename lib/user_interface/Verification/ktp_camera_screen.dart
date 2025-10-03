@@ -1,10 +1,15 @@
 import 'package:camera/camera.dart';
+import 'package:donasiku/user_interface/Verification/face_verification_screen.dart';
 import 'package:donasiku/user_interface/Verification/validation_form_screen.dart';
 import 'package:flutter/material.dart';
 import 'ktp_overlay_pointer.dart';
 
+enum CameraMode { ktp, face }
+
 class KtpCameraScreen extends StatefulWidget {
-  const KtpCameraScreen({Key? key}) : super(key: key);
+  const KtpCameraScreen({Key? key, required this.cameraMode}) : super(key: key);
+
+  final CameraMode cameraMode;
 
   @override
   _KtpCameraScreenState createState() => _KtpCameraScreenState();
@@ -24,8 +29,12 @@ class _KtpCameraScreenState extends State<KtpCameraScreen> {
   Future<void> _initializeCamera() async {
     _cameras = await availableCameras();
     if (_cameras != null && _cameras!.isNotEmpty) {
+      // Use front camera for face, back camera for KTP
+      final camera = widget.cameraMode == CameraMode.face && _cameras!.length > 1
+          ? _cameras![1]
+          : _cameras![0];
       _controller = CameraController(
-        _cameras![0],
+        camera,
         ResolutionPreset.high,
         enableAudio: false,
       );
@@ -77,10 +86,12 @@ class _KtpCameraScreenState extends State<KtpCameraScreen> {
                   padding: const EdgeInsets.only(bottom: 30.0),
                   child: Column(
                     children: [
-                      const Text(
-                        'Pastikan E-KTP dalam area terang & terbaca dengan jelas',
+                      Text(
+                        widget.cameraMode == CameraMode.ktp
+                            ? 'Pastikan E-KTP dalam area terang & terbaca dengan jelas'
+                            : 'Posisikan wajah Anda di dalam bingkai',
                         textAlign: TextAlign.center,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
@@ -90,13 +101,25 @@ class _KtpCameraScreenState extends State<KtpCameraScreen> {
                         onTap: () async {
                           try {
                             final image = await _controller!.takePicture();
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (context) => const VerificationFormScreen(),
-                              ),
-                            );
+                            if (!mounted) return;
+
+                            if (widget.cameraMode == CameraMode.ktp) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const FaceVerificationScreen(),
+                                ),
+                              );
+                            } else {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const VerificationFormScreen(),
+                                ),
+                              );
+                            }
                           } catch (e) {
                             print("Error taking picture: $e");
                           }

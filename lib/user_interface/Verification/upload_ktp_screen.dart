@@ -106,9 +106,8 @@ class UploadKtpScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder:
-                          (context) =>
-                              const KtpCameraScreen(), // Arahkan ke halaman kamera
+                      builder: (context) =>
+                          const KtpCameraScreen(cameraMode: CameraMode.ktp),
                     ),
                   );
                 },

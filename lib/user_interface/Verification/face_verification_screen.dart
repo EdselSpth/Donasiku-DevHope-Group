@@ -107,7 +107,7 @@ class FaceVerificationScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const KtpCameraScreen(),
+                      builder: (context) => const KtpCameraScreen(cameraMode: CameraMode.face),
                     ),
                   );
                 },

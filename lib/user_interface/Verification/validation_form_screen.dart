@@ -1,4 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class VerificationFormScreen extends StatefulWidget {
   const VerificationFormScreen({Key? key}) : super(key: key);
@@ -18,6 +21,52 @@ class _VerificationFormScreenState extends State<VerificationFormScreen> {
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   final _reasonController = TextEditingController();
+
+  final _storage = const FlutterSecureStorage();
+
+  Future<void> _updateProfile() async {
+    // Ganti URL ini dengan alamat IP backend Anda jika berbeda
+    final url = Uri.parse('http://10.0.2.2:3000/api/users/profile');
+
+    try {
+      // Ambil token dari secure storage
+      final token = await _storage.read(key: 'accessToken');
+      if (token == null) {
+        print('Token not found');
+        // Handle jika token tidak ditemukan, mungkin kembali ke halaman login
+        return;
+      }
+
+      // Backend mengharapkan multipart/form-data, jadi kita gunakan MultipartRequest
+      var request = http.MultipartRequest('PUT', url);
+
+      // Tambahkan headers
+      request.headers['Authorization'] = 'Bearer $token';
+
+      // Tambahkan fields dari controller
+      request.fields['name'] = _nameController.text;
+      request.fields['address'] = _addressController.text;
+      request.fields['phone'] = _phoneController.text;
+      // Field lain bisa ditambahkan di sini jika diperlukan oleh backend
+
+      // Kirim request
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200) {
+        print('Profile updated successfully');
+        print(response.body);
+        // TODO: Tambahkan navigasi ke halaman selanjutnya atau tampilkan pesan sukses
+      } else {
+        print('Failed to update profile: ${response.statusCode}');
+        print(response.body);
+        // TODO: Tampilkan pesan error kepada pengguna
+      }
+    } catch (e) {
+      print('An error occurred: $e');
+      // TODO: Tampilkan pesan error kepada pengguna
+    }
+  }
 
   @override
   void dispose() {
@@ -123,9 +172,7 @@ class _VerificationFormScreenState extends State<VerificationFormScreen> {
               ),
               const SizedBox(height: 32),
               ElevatedButton(
-                onPressed: () {
-                  // TODO: Tambahkan logika untuk tombol Lanjutkan
-                },
+                onPressed: _updateProfile, // Panggil fungsi update profile
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   backgroundColor: const Color(0xFF0D2C63),
