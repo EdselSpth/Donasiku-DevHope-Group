@@ -123,7 +123,9 @@ class _AddDonationPageState extends State<AddDonationPage> {
         _selectedLocation == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please fill all fields, select an image, and choose a location.'),
+          content: Text(
+            'Please fill all fields, select an image, and choose a location.',
+          ),
         ),
       );
       return;
@@ -311,9 +313,10 @@ class _AddDonationPageState extends State<AddDonationPage> {
                     _selectedLocation?.name ?? 'Pilih lokasi',
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      color: _selectedLocation == null
-                          ? Colors.grey.shade600
-                          : Colors.black,
+                      color:
+                          _selectedLocation == null
+                              ? Colors.grey.shade600
+                              : Colors.black,
                     ),
                   ),
                 ),
@@ -490,9 +493,7 @@ class _AddDonationPageState extends State<AddDonationPage> {
           const SizedBox(width: 16),
           Expanded(
             child: OutlinedButton(
-              onPressed: () {
-                // TODO: Logika untuk tombol Tampilkan
-              },
+              onPressed: () {},
               style: OutlinedButton.styleFrom(
                 foregroundColor: const Color(0xFF0D2C63),
                 side: const BorderSide(color: Color(0xFF0D2C63), width: 1.5),

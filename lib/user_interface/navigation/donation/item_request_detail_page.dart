@@ -1,5 +1,3 @@
-// lib/user_interface/donation/item_request_detail_page.dart
-
 import 'package:donasiku/models/item_request_model.dart'; 
 import 'package:donasiku/services/request_service.dart';
 import 'package:flutter/material.dart';

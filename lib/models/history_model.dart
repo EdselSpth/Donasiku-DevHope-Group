@@ -1,6 +1,3 @@
-// lib/models/
-
-// Enum untuk Status Donasi agar lebih terstruktur
 enum DonationStatus { Selesai, Dikirim, Dibatalkan, Pending, InProgress }
 
 DonationStatus _statusFromString(String status) {
@@ -20,7 +17,6 @@ DonationStatus _statusFromString(String status) {
   }
 }
 
-// Model untuk setiap item di Riwayat Barang
 class DonationHistoryModel {
   final String donationId;
   final String itemId;
@@ -30,7 +26,7 @@ class DonationHistoryModel {
   final String destination;
   final String quantity;
   final String itemName;
-  final String? itemImageUrl; // Opsional, karena ada yg tidak pakai gambar
+  final String? itemImageUrl;
   final DonationStatus status;
   final String description;
 
@@ -55,8 +51,7 @@ class DonationHistoryModel {
       profileImageUrl:
           json['donor']?['profile_url'] ?? 'https://i.pravatar.cc/150?img=12',
       donorName: json['donor']?['name'] ?? 'Unknown Donor',
-      role:
-          'Donatur', // The API response doesn't seem to have this info directly on the donation
+      role: 'Donatur',
       destination: json['receiver']?['address'] ?? 'Unknown Destination',
       quantity: (json['item']?['quantity'] ?? 0).toString(),
       itemName: json['item']?['name'] ?? 'Unknown Item',
@@ -67,13 +62,12 @@ class DonationHistoryModel {
   }
 }
 
-// Model untuk setiap item di Riwayat Chat
 class ChatHistoryModel {
   final String profileImageUrl;
   final String name;
   final String lastMessage;
   final String timestamp;
-  final bool isYou; // Untuk menampilkan "You: "
+  final bool isYou;
 
   ChatHistoryModel({
     required this.profileImageUrl,
@@ -87,7 +81,7 @@ class ChatHistoryModel {
 class ChatMessage {
   final String text;
   final String timestamp;
-  final bool isMe; // true jika pesan dari kita, false jika dari lawan bicara
+  final bool isMe;
 
   ChatMessage({
     required this.text,

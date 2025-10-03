@@ -29,7 +29,6 @@ class _KtpCameraScreenState extends State<KtpCameraScreen> {
   Future<void> _initializeCamera() async {
     _cameras = await availableCameras();
     if (_cameras != null && _cameras!.isNotEmpty) {
-      // Use front camera for face, back camera for KTP
       final camera =
           widget.cameraMode == CameraMode.face && _cameras!.length > 1
               ? _cameras![1]
