@@ -1,5 +1,6 @@
 // lib/user_interface/navigation/history_page.dart
 
+import 'package:donasiku/services/donation_service.dart';
 import 'package:donasiku/user_interface/navigation/history/detail_chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:donasiku/models/history_model.dart';
@@ -16,31 +17,10 @@ class HistoryPage extends StatefulWidget {
 class _HistoryPageState extends State<HistoryPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  late Future<List<DonationHistoryModel>> _donationHistoryFuture;
+  final DonationService _donationService = DonationService();
 
   // --- DATA DUMMY TERPUSAT ---
-  final List<DonationHistoryModel> donationHistory = [
-    DonationHistoryModel(
-      profileImageUrl: 'https://i.pravatar.cc/150?img=12',
-      donorName: 'Zunadea Kusmiandita',
-      role: 'Donatur',
-      destination:
-          'Panti Asuhan Al - Ghifari yang sangat panjang sekali namanya',
-      quantity: '1 Pcs',
-      itemName: 'Tas Dewasa',
-      itemImageUrl: 'https://ini-url-yang-salah.com/gambar.png',
-      status: DonationStatus.Selesai,
-    ),
-    DonationHistoryModel(
-      profileImageUrl: 'https://i.pravatar.cc/150?img=12',
-      donorName: 'Zunadea Kusmiandita',
-      role: 'Donatur',
-      destination: 'Panti Asuhan Al - Ghifari',
-      quantity: '1 Pcs',
-      itemName: 'Baju Dewasa Pria',
-      status: DonationStatus.Dikirim,
-    ),
-  ];
-
   final List<ChatHistoryModel> chatHistory = [
     ChatHistoryModel(
       profileImageUrl: 'https://i.pravatar.cc/150?img=1',
@@ -98,6 +78,7 @@ class _HistoryPageState extends State<HistoryPage>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _donationHistoryFuture = _donationService.getActiveDonations();
   }
 
   @override
@@ -189,11 +170,25 @@ class _HistoryPageState extends State<HistoryPage>
   }
 
   Widget _buildDonationHistoryList() {
-    return ListView.builder(
-      padding: const EdgeInsets.only(top: 16, bottom: 16),
-      itemCount: donationHistory.length,
-      itemBuilder: (context, index) {
-        return DonationHistoryCard(historyItem: donationHistory[index]);
+    return FutureBuilder<List<DonationHistoryModel>>(
+      future: _donationHistoryFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(child: Text('No donation history found.'));
+        } else {
+          final donationHistory = snapshot.data!;
+          return ListView.builder(
+            padding: const EdgeInsets.only(top: 16, bottom: 16),
+            itemCount: donationHistory.length,
+            itemBuilder: (context, index) {
+              return DonationHistoryCard(historyItem: donationHistory[index]);
+            },
+          );
+        }
       },
     );
   }

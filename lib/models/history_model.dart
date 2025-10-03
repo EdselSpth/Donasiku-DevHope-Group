@@ -1,10 +1,29 @@
 // lib/models/
 
 // Enum untuk Status Donasi agar lebih terstruktur
-enum DonationStatus { Selesai, Dikirim, Dibatalkan }
+enum DonationStatus { Selesai, Dikirim, Dibatalkan, Pending, InProgress }
+
+DonationStatus _statusFromString(String status) {
+  switch (status.toLowerCase()) {
+    case 'completed':
+      return DonationStatus.Selesai;
+    case 'shipped':
+      return DonationStatus.Dikirim;
+    case 'cancelled':
+      return DonationStatus.Dibatalkan;
+    case 'pending':
+      return DonationStatus.Pending;
+    case 'in_progress':
+      return DonationStatus.InProgress;
+    default:
+      return DonationStatus.Pending;
+  }
+}
 
 // Model untuk setiap item di Riwayat Barang
 class DonationHistoryModel {
+  final String donationId;
+  final String itemId;
   final String profileImageUrl;
   final String donorName;
   final String role;
@@ -13,8 +32,11 @@ class DonationHistoryModel {
   final String itemName;
   final String? itemImageUrl; // Opsional, karena ada yg tidak pakai gambar
   final DonationStatus status;
+  final String description;
 
   DonationHistoryModel({
+    required this.donationId,
+    required this.itemId,
     required this.profileImageUrl,
     required this.donorName,
     required this.role,
@@ -23,7 +45,26 @@ class DonationHistoryModel {
     required this.itemName,
     this.itemImageUrl,
     required this.status,
+    required this.description,
   });
+
+  factory DonationHistoryModel.fromJson(Map<String, dynamic> json) {
+    return DonationHistoryModel(
+      donationId: (json['donation_id'] ?? '').toString(),
+      itemId: (json['item']?['item_id'] ?? '').toString(),
+      profileImageUrl:
+          json['donor']?['profile_url'] ?? 'https://i.pravatar.cc/150?img=12',
+      donorName: json['donor']?['name'] ?? 'Unknown Donor',
+      role:
+          'Donatur', // The API response doesn't seem to have this info directly on the donation
+      destination: json['receiver']?['address'] ?? 'Unknown Destination',
+      quantity: (json['item']?['quantity'] ?? 0).toString(),
+      itemName: json['item']?['name'] ?? 'Unknown Item',
+      itemImageUrl: json['item']?['image'],
+      status: _statusFromString(json['status'] ?? 'pending'),
+      description: json['item']?['description'] ?? '',
+    );
+  }
 }
 
 // Model untuk setiap item di Riwayat Chat

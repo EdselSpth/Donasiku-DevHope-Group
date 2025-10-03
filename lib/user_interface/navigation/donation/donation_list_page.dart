@@ -1,5 +1,6 @@
 import 'package:donasiku/user_interface/navigation/donation/donation_detail_page.dart';
 import 'package:donasiku/models/donation_item.dart';
+import 'package:donasiku/models/history_model.dart';
 import 'package:donasiku/services/donation_service.dart';
 import 'package:donasiku/widget/donation_card.dart';
 import 'package:flutter/material.dart';
@@ -45,12 +46,12 @@ class _DonationListPageState extends State<DonationListPage> {
   final List<String> _filters = ['All', 'Baju', 'Celana', 'Elektro', 'Sport'];
 
   final DonationService donationService = DonationService();
-  late Future<List<DonationItem>> _donationItemsFuture;
+  late Future<List<DonationHistoryModel>> _donationHistoryFuture;
 
   @override
   void initState() {
     super.initState();
-    _donationItemsFuture = donationService.getDonationItems();
+    _donationHistoryFuture = donationService.getActiveDonations();
   }
 
   @override
@@ -179,8 +180,8 @@ class _DonationListPageState extends State<DonationListPage> {
           ];
         },
         // 3. BODY SEKARANG HANYA BERISI GRIDVIEW
-        body: FutureBuilder<List<DonationItem>>(
-          future: _donationItemsFuture,
+        body: FutureBuilder<List<DonationHistoryModel>>(
+          future: _donationHistoryFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -198,19 +199,30 @@ class _DonationListPageState extends State<DonationListPage> {
                 ),
                 itemCount: items.length,
                 itemBuilder: (context, index) {
-                  return DonationCard(
-                    item: items[index],
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder:
-                              (context) =>
-                                  DonationDetailPage(item: items[index]),
-                        ),
-                      );
-                    },
+                  final historyItem = items[index];
+                  final donationItem = DonationItem(
+                    id: historyItem.itemId,
+                    title: historyItem.itemName,
+                    location: historyItem.destination,
+                    imageUrl: historyItem.itemImageUrl ?? '',
+                    description: historyItem.description,
+                    owner: historyItem.donorName,
                   );
+                    return DonationCard(
+                      item: donationItem,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (context) => DonationDetailPage(
+                                  item: donationItem,
+                                  donationId: donationItem.id,
+                                ),
+                          ),
+                        );
+                      },
+                    );
                 },
               );
             } else {

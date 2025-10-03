@@ -1,13 +1,50 @@
 // lib/user_interface/donation/item_request_detail_page.dart
 
 import 'package:donasiku/models/item_request_model.dart'; 
+import 'package:donasiku/services/request_service.dart';
 import 'package:flutter/material.dart';
 
-class ItemRequestDetailPage extends StatelessWidget {
-  // --- TIPE DATA DIUBAH ---
+class ItemRequestDetailPage extends StatefulWidget {
   final ItemRequestModelDetail request;
 
   const ItemRequestDetailPage({super.key, required this.request});
+
+  @override
+  State<ItemRequestDetailPage> createState() => _ItemRequestDetailPageState();
+}
+
+class _ItemRequestDetailPageState extends State<ItemRequestDetailPage> {
+  final RequestService requestService = RequestService();
+  bool _isLoading = false;
+
+  void _approveRequest() async {
+    if (widget.request.itemId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('This request is not linked to an item.')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await requestService.approveRequest(widget.request.requestId, widget.request.itemId!);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Request approved successfully!')),
+      );
+      Navigator.pop(context);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to approve request: $e')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +99,7 @@ class ItemRequestDetailPage extends StatelessWidget {
             CircleAvatar(
               radius: 24,
               backgroundColor: Colors.grey[200],
-              backgroundImage: AssetImage(request.requesterLogoUrl),
+              backgroundImage: AssetImage(widget.request.requesterLogoUrl),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -70,7 +107,7 @@ class ItemRequestDetailPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    request.itemName,
+                    widget.request.itemName,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -78,11 +115,11 @@ class ItemRequestDetailPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Penerima : ${request.recipient}',
+                    'Penerima : ${widget.request.recipient}',
                     style: TextStyle(color: Colors.grey[600], fontSize: 13),
                   ),
                   Text(
-                    'Lokasi : ${request.location}',
+                    'Lokasi : ${widget.request.location}',
                     style: TextStyle(color: Colors.grey[600], fontSize: 13),
                   ),
                 ],
@@ -109,12 +146,12 @@ class ItemRequestDetailPage extends StatelessWidget {
                 CircleAvatar(
                   radius: 24,
                   backgroundColor: Colors.grey[200],
-                  backgroundImage: AssetImage(request.requesterLogoUrl),
+                  backgroundImage: AssetImage(widget.request.requesterLogoUrl),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Text(
-                    request.recipient,
+                    widget.request.recipient,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -129,9 +166,9 @@ class ItemRequestDetailPage extends StatelessWidget {
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 16),
-            _buildDetailRow('Nama Barang', request.itemName),
-            _buildDetailRow('Jumlah/Kebutuhan', request.quantity),
-            _buildDetailRow('Deskripsi Tambahan', request.description),
+            _buildDetailRow('Nama Barang', widget.request.itemName),
+            _buildDetailRow('Jumlah/Kebutuhan', widget.request.quantity),
+            _buildDetailRow('Deskripsi Tambahan', widget.request.description),
           ],
         ),
       ),
@@ -173,9 +210,7 @@ class ItemRequestDetailPage extends StatelessWidget {
           children: [
             Expanded(
               child: ElevatedButton(
-                // --- PERUBAHAN DI SINI ---
                 onPressed: () {
-                  // Perintah untuk kembali ke halaman sebelumnya
                   Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
@@ -192,7 +227,7 @@ class ItemRequestDetailPage extends StatelessWidget {
             const SizedBox(width: 16),
             Expanded(
               child: OutlinedButton(
-                onPressed: () {},
+                onPressed: _isLoading ? null : _approveRequest,
                 style: OutlinedButton.styleFrom(
                   foregroundColor: const Color(0xFF0D2C63),
                   side: const BorderSide(color: Color(0xFF0D2C63), width: 1.5),
@@ -201,7 +236,11 @@ class ItemRequestDetailPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text('Setujui'),
+                child: _isLoading
+                    ? const CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF0D2C63)),
+                      )
+                    : const Text('Setujui'),
               ),
             ),
           ],

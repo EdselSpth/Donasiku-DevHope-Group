@@ -5,6 +5,18 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+// Model untuk Category
+class Category {
+  final int id;
+  final String name;
+
+  Category({required this.id, required this.name});
+
+  factory Category.fromJson(Map<String, dynamic> json) {
+    return Category(id: json['category_id'], name: json['name']);
+  }
+}
+
 class ItemRequestPage extends StatefulWidget {
   const ItemRequestPage({super.key});
 
@@ -19,29 +31,81 @@ class _ItemRequestPageState extends State<ItemRequestPage> {
   final _descriptionController = TextEditingController();
   final _storage = const FlutterSecureStorage();
 
+  // State untuk kategori
+  List<Category> _categories = [];
+  int? _selectedCategoryId;
+  bool _isLoadingCategories = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCategories();
+  }
+
+  // Fungsi untuk mengambil data kategori dari backend
+  Future<void> _fetchCategories() async {
+    setState(() {
+      _isLoadingCategories = true;
+    });
+    try {
+      final response = await http.get(
+        Uri.parse('http://10.0.2.2:3000/category'),
+      );
+      if (response.statusCode == 200) {
+        List<dynamic> data = json.decode(response.body);
+        setState(() {
+          _categories = data.map((json) => Category.fromJson(json)).toList();
+          _isLoadingCategories = false;
+        });
+      } else {
+        setState(() {
+          _isLoadingCategories = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to load categories from server.'),
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _isLoadingCategories = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error fetching categories: $e')),
+      );
+    }
+  }
+
   Future<void> _submitRequest() async {
     if (_itemNameController.text.isEmpty ||
         _quantityController.text.isEmpty ||
-        _originController.text.isEmpty) {
+        _originController.text.isEmpty ||
+        _selectedCategoryId == null) { // Validasi category
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill all required fields.')),
       );
       return;
     }
 
-    // TODO: Replace with your actual IP address
-    const String apiUrl = 'http://localhost:3000/donate/requests';
-    final token = await _storage.read(key: 'token');
+    const String apiUrl = 'http://10.0.2.2:3000/donate/requests';
+    final token = await _storage.read(key: 'accessToken');
+
+    if (token == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Authentication error. Please log in again.')),
+      );
+      return;
+    }
 
     final message =
         '${_itemNameController.text} - ${_descriptionController.text}';
 
     final body = {
-      // TODO: These are mocked values. Replace with actual data from your app.
-      'category_id': '1',
+      'category_id': _selectedCategoryId.toString(), // Menggunakan ID kategori yang dipilih
       'message': message,
       'quantity': _quantityController.text,
-      'area_id': '1',
+      'area_id': '1', // TODO: Implement area selection like category
       'address': _originController.text,
     };
 
@@ -56,19 +120,18 @@ class _ItemRequestPageState extends State<ItemRequestPage> {
       );
 
       if (response.statusCode == 201) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Request submitted successfully!')),
-        );
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => ItemRequestListPage()),
-        );
-      } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Request submitted successfully!')),
+                );
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ItemRequestListPage()),
+                );      } else {
         final responseData = json.decode(response.body);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Failed to submit request: ${responseData['message']}',
+              'Failed to submit request: ${responseData['message'] ?? 'Unknown error'}',
             ),
           ),
         );
@@ -198,6 +261,8 @@ class _ItemRequestPageState extends State<ItemRequestPage> {
               controller: _itemNameController,
             ),
             const SizedBox(height: 16),
+            _buildCategoryDropdown(), // Dropdown kategori
+            const SizedBox(height: 16),
             _buildTextFieldWithLabel(
               label: 'Jumlah/Kebutuhan',
               hint: 'Masukan Jumlah',
@@ -239,6 +304,51 @@ class _ItemRequestPageState extends State<ItemRequestPage> {
           ],
         ),
       ),
+    );
+  }
+
+  // Widget untuk dropdown kategori
+  Widget _buildCategoryDropdown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Kategori',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+        ),
+        const SizedBox(height: 8),
+        _isLoadingCategories
+            ? const Center(child: CircularProgressIndicator())
+            : DropdownButtonFormField<int>(
+                value: _selectedCategoryId,
+                hint: const Text('Pilih Kategori'),
+                items: _categories.map((Category category) {
+                  return DropdownMenuItem<int>(
+                    value: category.id,
+                    child: Text(category.name),
+                  );
+                }).toList(),
+                onChanged: (int? newValue) {
+                  setState(() {
+                    _selectedCategoryId = newValue;
+                  });
+                },
+                validator: (value) =>
+                    value == null ? 'Kategori tidak boleh kosong' : null,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  ),
+                ),
+              ),
+      ],
     );
   }
 

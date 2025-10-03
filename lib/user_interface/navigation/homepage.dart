@@ -1,11 +1,8 @@
-
-import 'package:donasiku/state_management/main_screen_controller.dart';
-import 'package:get/get.dart';
-import 'package:donasiku/user_interface/navigation/donation/donation_detail_page.dart';
 import 'package:donasiku/services/donation_service.dart';
 import 'package:donasiku/services/user/user_api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:donasiku/user_interface/navigation/donation/donation_list_page.dart';
+import 'package:donasiku/user_interface/navigation/donation/donation_detail_page.dart';
 import 'package:donasiku/user_interface/recipients/recipient_list_page.dart';
 import 'package:donasiku/user_interface/navigation/donation/donation_page.dart';
 import 'package:donasiku/models/donation_item.dart';
@@ -152,8 +149,10 @@ class _HomePageState extends State<HomePage> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      final MainScreenController controller = Get.find<MainScreenController>();
-                      controller.changeTabIndex(1);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => DonationPage()),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF0D2C63),
@@ -174,10 +173,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildBody(BuildContext context) {
-    // 2. GUNAKAN SINGLECHILDSCROLLVIEW AGAR HANYA BAGIAN BODY YANG BISA DI-SCROLL
     return SingleChildScrollView(
       child: Padding(
-        // 3. Padding atas diatur agar konten dimulai di bawah header
         padding: const EdgeInsets.only(
           top: 240,
           left: 24,
@@ -276,14 +273,14 @@ class _HomePageState extends State<HomePage> {
                     itemCount: items.length,
                     itemBuilder: (context, index) {
                       final item = items[index];
-                      return DonationCard(item: item, onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => DonationDetailPage(item: item),
-                          ),
-                        );
-                      });
+                        return DonationCard(item: item, onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DonationDetailPage(item: item, donationId: item.id),
+                            ),
+                          );
+                        });
                     },
                   );
                 } else {

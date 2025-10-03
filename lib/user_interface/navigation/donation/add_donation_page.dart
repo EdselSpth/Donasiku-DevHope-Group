@@ -1,3 +1,4 @@
+import 'package:donasiku/models/location_model.dart';
 // lib/user_interface/donation/add_donation_page.dart
 
 import 'dart:convert';
@@ -38,7 +39,7 @@ class _AddDonationPageState extends State<AddDonationPage> {
   File? _imageFile;
   final _picker = ImagePicker();
   final _storage = const FlutterSecureStorage();
-  String? _selectedLocation;
+  Location? _selectedLocation;
 
   List<Category> _categories = [];
   int? _selectedCategoryId;
@@ -149,10 +150,10 @@ class _AddDonationPageState extends State<AddDonationPage> {
     final fields = {
       'name': _productNameController.text,
       'description': _descriptionController.text,
-      'address': _selectedLocation!,
+      'address': _selectedLocation!.name,
       'category_id': _selectedCategoryId.toString(),
       'quantity': '1',
-      'area_id': '1',
+      'area_id': _selectedLocation!.id.toString(),
     };
     request.fields.addAll(fields);
     print('[ADD_DONATION] Request fields: $fields');
@@ -282,13 +283,13 @@ class _AddDonationPageState extends State<AddDonationPage> {
         const SizedBox(height: 8),
         InkWell(
           onTap: () async {
-            final result = await Navigator.push(
+            final result = await Navigator.push<Location>(
               context,
               MaterialPageRoute(
                 builder: (context) => const LocationPickerPage(),
               ),
             );
-            if (result != null && result is String) {
+            if (result != null) {
               setState(() {
                 _selectedLocation = result;
               });
@@ -307,7 +308,7 @@ class _AddDonationPageState extends State<AddDonationPage> {
               children: [
                 Flexible(
                   child: Text(
-                    _selectedLocation ?? 'Pilih lokasi',
+                    _selectedLocation?.name ?? 'Pilih lokasi',
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       color: _selectedLocation == null
