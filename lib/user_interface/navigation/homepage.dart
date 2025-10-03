@@ -264,23 +264,31 @@ class _HomePageState extends State<HomePage> {
                   return GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                      childAspectRatio: 0.8,
-                    ),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                          childAspectRatio: 0.8,
+                        ),
                     itemCount: items.length,
                     itemBuilder: (context, index) {
                       final item = items[index];
-                        return DonationCard(item: item, onTap: () {
+                      return DonationCard(
+                        item: item,
+                        onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => DonationDetailPage(item: item, donationId: item.id),
+                              builder:
+                                  (context) => DonationDetailPage(
+                                    item: item,
+                                    donationId: item.id,
+                                  ),
                             ),
                           );
-                        });
+                        },
+                      );
                     },
                   );
                 } else {
