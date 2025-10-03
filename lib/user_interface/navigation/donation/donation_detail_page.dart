@@ -1,16 +1,15 @@
 import 'package:donasiku/models/donation_item.dart';
 import 'package:donasiku/services/donation_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:donasiku/user_interface/navigation/history/history_page.dart';
 
 class DonationDetailPage extends StatefulWidget {
   final DonationItem item;
-  final String donationId;
+  final String? donationId;
 
-  const DonationDetailPage({
-    Key? key,
-    required this.item,
-    required this.donationId,
-  }) : super(key: key);
+  const DonationDetailPage({Key? key, required this.item, this.donationId})
+    : super(key: key);
 
   @override
   _DonationDetailPageState createState() => _DonationDetailPageState();
@@ -19,30 +18,93 @@ class DonationDetailPage extends StatefulWidget {
 class _DonationDetailPageState extends State<DonationDetailPage> {
   bool _isLoading = false;
   final DonationService _donationService = DonationService();
+  String? _resolvedDonationId;
 
   Future<void> _approveDonation() async {
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() => _isLoading = true);
+
+    final donationId = _resolvedDonationId ?? widget.donationId;
+    if (donationId == null || donationId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Donation ID tidak tersedia untuk disetujui.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      setState(() => _isLoading = false);
+      return;
+    }
 
     try {
-      final donationId = widget.donationId;
-
-      final success = await _donationService.updateDonationStatus(
-        donationId,
-        'completed',
-      );
-
-      if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Donasi berhasil disetujui!'),
-            backgroundColor: Colors.green,
-          ),
+      if (kDebugMode) {
+        print(
+          'DonationDetailPage: item.id=${widget.item.id} resolvedDonationId=$_resolvedDonationId widget.donationId=${widget.donationId}',
         );
-        Navigator.of(context).pop();
-      } else {
-        throw Exception('Gagal memperbarui status donasi.');
+        print(
+          'DonationDetailPage: attempting updateDonationStatus for donationId: $donationId',
+        );
+      }
+
+      try {
+        final success = await _donationService.updateDonationStatus(
+          donationId,
+          'completed',
+        );
+
+        if (success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Donasi berhasil disetujui!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const HistoryPage()),
+          );
+          return;
+        }
+      } catch (e) {
+        final message = e.toString();
+        if (message.contains('Donation not found') ||
+            message.contains('Donation not found')) {
+          if (kDebugMode)
+            print(
+              'Update returned Donation not found; attempting to re-resolve donation id',
+            );
+          try {
+            final list = await _donationService.getActiveDonations();
+            String? foundId;
+            for (final h in list) {
+              if (h.itemId == widget.item.id) {
+                foundId = h.donationId;
+                break;
+              }
+            }
+            if (foundId != null && foundId != donationId) {
+              if (kDebugMode)
+                print('Retrying update with found donationId: $foundId');
+              final retrySuccess = await _donationService.updateDonationStatus(
+                foundId,
+                'completed',
+              );
+              if (retrySuccess) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Donasi berhasil disetujui (retry)!'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => const HistoryPage()),
+                );
+                return;
+              }
+            }
+          } catch (retryErr) {
+            if (kDebugMode) print('Retry failed: $retryErr');
+          }
+        }
+        rethrow;
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -52,9 +114,33 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
         ),
       );
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      setState(() => _isLoading = false);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // If donationId already provided, resolve immediately
+    if (widget.donationId != null && widget.donationId!.isNotEmpty) {
+      _resolvedDonationId = widget.donationId;
+    } else {
+      // try to find an active donation that matches this item
+      _resolveDonationForItem();
+    }
+  }
+
+  Future<void> _resolveDonationForItem() async {
+    try {
+      final list = await _donationService.getActiveDonations();
+      for (final h in list) {
+        if (h.itemId == widget.item.id) {
+          setState(() => _resolvedDonationId = h.donationId);
+          break;
+        }
+      }
+    } catch (e) {
+      // ignore — leave _resolvedDonationId null
     }
   }
 
@@ -80,6 +166,24 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Debug banner: show ids involved (debug builds only)
+            if (kDebugMode)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    color: Colors.yellow.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.orange),
+                  ),
+                  child: Text(
+                    'debug: item.id=${widget.item.id} provided=${widget.donationId ?? "null"} resolved=${_resolvedDonationId ?? "null"}',
+                    style: const TextStyle(fontSize: 12, color: Colors.black87),
+                  ),
+                ),
+              ),
             const Text(
               'Foto Barang',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
